@@ -85,11 +85,11 @@ class TestMutualInfo(unittest.TestCase):
     def test_mutual_info_2D(self):
         xs = np.random.randint(0,5,20)
         ys = np.random.randint(0,5,20)
-        expect = mutual_info(xs, ys, b=5)
+        expect = mutual_info(xs, ys, bx=5, by=5)
 
         us = np.copy(np.reshape(xs, (4,5)))
         vs = np.copy(np.reshape(ys, (4,5)))
-        got = mutual_info(us, vs, b=5)
+        got = mutual_info(us, vs, bx=5, by=5)
 
         self.assertAlmostEqual(expect, got)
 
@@ -173,12 +173,12 @@ class TestLocalMutualInfo(unittest.TestCase):
     def test_mutual_info_2D(self):
         xs = np.random.randint(0,5,20)
         ys = np.random.randint(0,5,20)
-        expect = mutual_info(xs, ys, b=5, local=True)
+        expect = mutual_info(xs, ys, bx=5, by=5, local=True)
         self.assertEqual(xs.shape, expect.shape)
 
         us = np.copy(np.reshape(xs, (4,5)))
         vs = np.copy(np.reshape(ys, (4,5)))
-        got = mutual_info(us, vs, b=5, local=True)
+        got = mutual_info(us, vs, bx=5, by=5, local=True)
         self.assertTrue(us.shape, got.shape)
 
         self.assertTrue((expect == np.reshape(got,expect.shape)).all())
