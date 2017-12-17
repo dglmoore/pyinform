@@ -88,13 +88,13 @@ class TestBlockEntropy(unittest.TestCase):
         self.assertAlmostEqual(1.649204, block_entropy(xs, 2), places=6)
 
     def test_block_entropy_base_4(self):
-        self.assertAlmostEqual(1.250000,
+        self.assertAlmostEqual(2.500000,
                 block_entropy([3,3,3,2,1,0,0,0,1], 2), places=6)
 
-        self.assertAlmostEqual(1.202820,
+        self.assertAlmostEqual(2.405639,
                 block_entropy([2,2,3,3,3,3,2,1,0], 2), places=6)
 
-        self.assertAlmostEqual(0.649397,
+        self.assertAlmostEqual(1.298795,
                 block_entropy([2,2,2,2,2,2,1,1,1], 2, b=4), places=6)
 
     def test_block_entropy_base_4_ensemble(self):
@@ -102,7 +102,7 @@ class TestBlockEntropy(unittest.TestCase):
               [2,2,3,3,3,3,2,1,0],
               [0,0,0,0,1,1,0,0,0],
               [1,1,0,0,0,1,1,2,2]]
-        self.assertAlmostEqual(1.505488, block_entropy(xs, 2), places=6)
+        self.assertAlmostEqual(3.010977, block_entropy(xs, 2), places=6)
 
 class TestLocalBlockEntropy(unittest.TestCase):
     def test_block_entropy_empty(self):
@@ -188,13 +188,13 @@ class TestLocalBlockEntropy(unittest.TestCase):
         self.assertAlmostEqual(1.649204, block_entropy(xs, 2, local=True).mean(), places=6)
 
     def test_block_entropy_base_4(self):
-        self.assertAlmostEqual(1.250000,
+        self.assertAlmostEqual(2.500000,
                 block_entropy([3,3,3,2,1,0,0,0,1], 2, local=True).mean(), places=6)
 
-        self.assertAlmostEqual(1.202820,
+        self.assertAlmostEqual(2.405639,
                 block_entropy([2,2,3,3,3,3,2,1,0], 2, local=True).mean(), places=6)
 
-        self.assertAlmostEqual(0.649397,
+        self.assertAlmostEqual(1.298795,
                 block_entropy([2,2,2,2,2,2,1,1,1], 2, b=4, local=True).mean(), places=6)
 
     def test_block_entropy_base_4_ensemble(self):
@@ -202,7 +202,7 @@ class TestLocalBlockEntropy(unittest.TestCase):
               [2,2,3,3,3,3,2,1,0],
               [0,0,0,0,1,1,0,0,0],
               [1,1,0,0,0,1,1,2,2]]
-        self.assertAlmostEqual(1.505488,
+        self.assertAlmostEqual(3.010977,
                 block_entropy(xs, 2, local=True).mean(), places=6)
 
 if __name__ == "__main__":
