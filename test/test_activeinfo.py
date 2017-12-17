@@ -88,13 +88,13 @@ class TestActiveInfo(unittest.TestCase):
         self.assertAlmostEqual(0.3080467, active_info(xs, 2), places=6)
 
     def test_active_info_base_4(self):
-        self.assertAlmostEqual(0.635471,
+        self.assertAlmostEqual(1.270942,
                 active_info([3,3,3,2,1,0,0,0,1], 2), places=6)
 
-        self.assertAlmostEqual(0.635471,
+        self.assertAlmostEqual(1.270942,
                 active_info([2,2,3,3,3,3,2,1,0], 2), places=6)
 
-        self.assertAlmostEqual(0.234783,
+        self.assertAlmostEqual(0.469565,
                 active_info([2,2,2,2,2,2,1,1,1], 2, b=4), places=6)
 
     def test_active_info_base_4_ensemble(self):
@@ -102,7 +102,7 @@ class TestActiveInfo(unittest.TestCase):
               [2,2,3,3,3,3,2,1,0],
               [0,0,0,0,1,1,0,0,0],
               [1,1,0,0,0,1,1,2,2]]
-        self.assertAlmostEqual(0.662146, active_info(xs, 2), places=6)
+        self.assertAlmostEqual(1.324291, active_info(xs, 2), places=6)
 
 class TestLocalActiveInfo(unittest.TestCase):
     def test_active_info_empty(self):
@@ -188,13 +188,13 @@ class TestLocalActiveInfo(unittest.TestCase):
         self.assertAlmostEqual(0.3080467, active_info(xs, 2, local=True).mean(), places=6)
 
     def test_active_info_base_4(self):
-        self.assertAlmostEqual(0.635471,
+        self.assertAlmostEqual(1.270942,
                 active_info([3,3,3,2,1,0,0,0,1], 2, local=True).mean(), places=6)
 
-        self.assertAlmostEqual(0.635471,
+        self.assertAlmostEqual(1.270942,
                 active_info([2,2,3,3,3,3,2,1,0], 2, local=True).mean(), places=6)
 
-        self.assertAlmostEqual(0.234783,
+        self.assertAlmostEqual(0.469565,
                 active_info([2,2,2,2,2,2,1,1,1], 2, b=4, local=True).mean(), places=6)
 
     def test_active_info_base_4_ensemble(self):
@@ -202,7 +202,7 @@ class TestLocalActiveInfo(unittest.TestCase):
               [2,2,3,3,3,3,2,1,0],
               [0,0,0,0,1,1,0,0,0],
               [1,1,0,0,0,1,1,2,2]]
-        self.assertAlmostEqual(0.662146,
+        self.assertAlmostEqual(1.324291,
                 active_info(xs, 2, local=True).mean(), places=6)
 
 if __name__ == "__main__":
