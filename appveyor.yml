@@ -1,4 +1,4 @@
-version: 0.0.5.{build}
+version: 1.0.0.{build}
 
 environment:
   matrix:
@@ -8,10 +8,10 @@ environment:
 
 install:
   - cmd: "%PYTHON%\\python.exe -m pip install numpy"
-  - ps: Invoke-RestMethod https://github.com/ELIFE-ASU/Inform/releases/download/v0.0.5/inform-0.0.5_mixed.zip -OutFile inform-0.0.5_mixed.zip
-  - ps: 7z x inform-0.0.5_mixed.zip
-  - ps: Move-Item inform-0.0.5 pyinform/inform-0.0.5
-  - ps: Remove-Item inform-0.0.5_mixed.zip
+  - ps: Invoke-RestMethod https://github.com/ELIFE-ASU/Inform/releases/download/v1.0.0/inform-1.0.0_mixed.zip -OutFile inform-1.0.0_mixed.zip
+  - ps: 7z x inform-1.0.0_mixed.zip
+  - ps: Move-Item inform-1.0.0 pyinform/inform-1.0.0
+  - ps: Remove-Item inform-1.0.0_mixed.zip
 
 build: off
 
