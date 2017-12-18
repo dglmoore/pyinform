@@ -188,6 +188,17 @@ class TestDist(unittest.TestCase):
         self.assertEqual(2, d[1])
         self.assertEqual(4, d[0])
 
+    def test_get_slice(self):
+        d = Dist(5)
+        self.assertEqual([0,0,0,0,0], d[:])
+        self.assertEqual([0,0,0], d[:3])
+        self.assertEqual([0,0], d[3:])
+
+        d = Dist.from_hist([0,1,2,3,4])
+        self.assertEqual([0,1,2,3,4], d[:])
+        self.assertEqual([4,3,2,1,0], d[::-1])
+        self.assertEqual([1,2,3], d[1:4])
+
     def test_counts(self):
         d = Dist(2)
         self.assertEqual(0, d.counts())

@@ -245,7 +245,9 @@ class Dist:
         :rtype: int
         :raises IndexError: if ``event < 0 or len(self) <= event``
         """
-        if event < 0 or event >= len(self):
+        if isinstance(event, slice):
+           return [ self[i] for i in range(*event.indices(len(self))) ]
+        elif event < 0 or event >= len(self):
             raise IndexError()
         return _dist_get(self._dist, c_ulong(event))
 
