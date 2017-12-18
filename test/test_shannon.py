@@ -11,7 +11,7 @@ from pyinform.shannon import *
 class TestShannon(unittest.TestCase):
     def test_entropy_invalid_dist(self):
         d = Dist(5)
-        self.assertFalse(d.valid())
+        self.assertFalse(d.is_valid)
         self.assertTrue(isnan(entropy(d)))
 
     def test_entropy_delta_function(self):

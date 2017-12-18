@@ -194,6 +194,7 @@ class Dist:
         _dist_copy(self._dist, d._dist)
         return d
 
+    @property
     def counts(self):
         """
         Return the number of observations made thus far.
@@ -203,13 +204,13 @@ class Dist:
         ::
 
             >>> d = Dist(5)
-            >>> d.counts()
+            >>> d.counts
             0
 
         ::
 
             >>> d = Dist([1,0,3,2])
-            >>> d.counts()
+            >>> d.counts
             6
 
         See also :py:meth:`.__len__`.
@@ -219,7 +220,8 @@ class Dist:
         """
         return _dist_counts(self._dist)
 
-    def valid(self):
+    @property
+    def is_valid(self):
         """
         Determine if the distribution is a valid probability distribution, i.e.
         if the support is not empty and at least one observation has been made.
@@ -229,13 +231,13 @@ class Dist:
         ::
 
             >>> d = Dist(5)
-            >>> d.valid()
+            >>> d.is_valid
             False
 
         ::
 
             >>> d = Dist([0,0,0,1])
-            >>> d.valid()
+            >>> d.is_valid
             True
 
         See also :py:meth:`.__len__` and :py:meth:`.counts`.
@@ -379,10 +381,10 @@ class Dist:
         :param int event: the observed event
         :return: the empirical probability *event*
         :rtype: float
-        :raises ValueError: if ``not self.valid()``
+        :raises ValueError: if ``not self.is_valid``
         :raises IndexError: if ``event < 0 or len(self) <= event``
         """
-        if not self.valid():
+        if not self.is_valid:
             raise ValueError("invalid distribution")
         elif event < 0 or event >= len(self):
             raise IndexError()
@@ -405,11 +407,11 @@ class Dist:
 
         :return: the empirical probabilities of all o
         :rtype: ``numpy.ndarray``
-        :raises ValueError: if ``not self.valid()``
+        :raises ValueError: if ``not self.is_valid``
         :raises RuntimeError: if the dump fails in the C call
         :raises IndexError: if ``event < 0 or len(self) <= event``
         """
-        if not self.valid():
+        if not self.is_valid:
             raise ValueError("invalid distribution")
         n = len(self)
         probs = np.empty(n, dtype=np.float64)
