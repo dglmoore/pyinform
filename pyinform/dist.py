@@ -68,6 +68,21 @@ class Dist:
         dist = _dist_approx(data, probs.size, tol)
         return Dist(pointer=dist)
 
+    @classmethod
+    def from_data(cls, seq, n=None):
+        """
+        Create a distribution from a sequence of observations
+        """
+        seq = np.ascontiguousarray(seq, dtype=np.uint32)
+        if seq.size == 0:
+            raise ValueError("no data in sequence")
+        data = seq.ctypes.data_as(POINTER(c_uint))
+        dist = Dist(pointer=_dist_infer(data, seq.size))
+        if n is not None and len(dist) < n:
+            dist.resize(n)
+        return dist
+
+
     def __dealloc__(self):
         """
         Deallocate the memory underlying the distribution.
@@ -398,6 +413,10 @@ _dist_copy.restype = c_void_p
 _dist_create = _inform.inform_dist_create
 _dist_create.argtypes = [POINTER(c_uint), c_ulong]
 _dist_create.restype = c_void_p
+
+_dist_infer = _inform.inform_dist_infer
+_dist_infer.argtypes = [POINTER(c_uint), c_ulong]
+_dist_infer.restype = c_void_p
 
 _dist_approx = _inform.inform_dist_approximate
 _dist_approx.argtypes = [POINTER(c_double), c_ulong, c_double]
