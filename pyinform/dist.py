@@ -54,16 +54,6 @@ class Dist:
                 raise ValueError("support is multi-dimenstional")
             elif n.size == 0:
                 raise ValueError("support is empty")
-            
-            # If floating point values, create histogram from given probability distribution    
-            if issubclass(n.dtype.type,(float,np.floating)):
-                if np.isclose(np.sum(n),1.0) != True:
-                    raise ValueError("probability distribution must sum to unity")
-                else:
-                    n = np.copy(np.asarray(n,dtype=np.float))
-                    for i in range(np.size(n)):
-                        n[i] = np.round(n[i],9)*1e9
-                xs = np.ascontiguousarray(n,dtype=np.uint32)
 
             # If integer values, use input as underlying support
             elif issubclass(n.dtype.type,(int,np.integer)):            

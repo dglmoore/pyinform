@@ -8,36 +8,6 @@ from pyinform.dist import Dist
 
 class TestDist(unittest.TestCase):
 
-    def test_hist_generation(self):
-        # Make sure dist.dump() matches initial probability dist
-        n_trials = 10
-        for each in range(n_trials):
-            array_size = np.random.randint(1,1000)
-            prob_dist = np.zeros(array_size)
-            for i in range(array_size):
-                prob_dist[i] = np.random.rand()
-            prob_dist = prob_dist/np.sum(prob_dist)
-            d1 = Dist(prob_dist)
-            self.assertTrue(np.allclose(prob_dist,d1.dump()))
-            prob_list = np.ndarray.tolist(prob_dist)
-            d2 = Dist(prob_list)
-            self.assertTrue(np.allclose(prob_dist,d2.dump()))
-
-        # Make sure integer types are all supported
-        dtype_array = [np.int64,np.int32,np.int16,np.int8,np.int,np.longlong,np.short,np.intc,np.uint64,np.uint32,np.uint16,np.uint8,np.uint,np.ulonglong,np.ushort,np.uintc]
-        for each in dtype_array:
-            d = np.asarray([2,2,4],dtype=each)
-            self.assertTrue(np.allclose(Dist(d).dump(),[0.25,0.25,0.5]))
-        
-        # Make sure floating types are all supported
-        dtype_array = [np.single,np.double,np.float,np.longfloat,np.float16,np.float32,np.float64]
-        for each in dtype_array:
-            d = np.asarray([0.25,0.25,0.5],dtype=each)
-            self.assertTrue(np.allclose(Dist(d).dump(),[0.25,0.25,0.5]))       
-
-    def test_prob_dist(self):
-        d = [1]
-
     def test_alloc_negative(self):
         with self.assertRaises(ValueError):
             Dist(-1)
