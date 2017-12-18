@@ -71,6 +71,33 @@ class TestDist(unittest.TestCase):
             self.assertEqual(d[i], i)
             self.assertEqual(arr[i], 0)
 
+    def test_from_probs_empty(self):
+        with self.assertRaises(ValueError):
+            Dist.from_probs([])
+
+    def test_from_probs_negative(self):
+        with self.assertRaises(ValueError):
+            Dist.from_probs(-1)
+
+        with self.assertRaises(ValueError):
+            Dist.from_probs([-0.5, 0.5])
+
+    def test_from_probs_unity(self):
+        with self.assertRaises(ValueError):
+            Dist.from_probs(0.9)
+
+        with self.assertRaises(ValueError):
+            Dist.from_probs(1.0 - 1e-6)
+
+        with self.assertRaises(ValueError):
+            Dist.from_probs([0.5, 0.4])
+
+        with self.assertRaises(ValueError):
+            Dist.from_probs([0.5-1e-9, 0.5-1e-9])
+
+        Dist.from_probs(1.0 - 1e-9)
+        Dist.from_probs(1.0 - 1e-7, tol=1e-6)
+
     def test_resize_negative(self):
         d = Dist(3)
         with self.assertRaises(ValueError):

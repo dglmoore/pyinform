@@ -41,16 +41,31 @@ class Dist:
         """
         Create a distribution from a histogram
         """
-        hist = np.asarray(hist)
+        hist = np.ascontiguousarray(hist, dtype=np.uint32)
         if hist.ndim == 0:
             raise ValueError("histogram is zero-dimensional")
         elif hist.ndim > 1:
             raise ValueError("histogram is multi-dimensional")
         elif hist.size == 0:
             raise ValueError("support is empty")
-        hist = np.ascontiguousarray(hist, dtype=np.uint32)
         data = hist.ctypes.data_as(POINTER(c_uint))
         dist = _dist_create(data, hist.size)
+        return Dist(pointer=dist)
+
+    @classmethod
+    def from_probs(cls, probs, tol=1e-9):
+        """
+        Create a distribution from probabilities
+        """
+        probs = np.ascontiguousarray(probs, dtype=np.float64)
+        if probs.size == 0:
+            raise ValueError("no probabilities provided")
+        elif np.any(probs < 0.0):
+            raise ValueError("negative probability provided")
+        elif np.abs(np.sum(probs) - 1.0) > tol:
+            raise ValueError("probabilities must sum to 1.0")
+        data = probs.ctypes.data_as(POINTER(c_double))
+        dist = _dist_approx(data, probs.size, tol)
         return Dist(pointer=dist)
 
     def __dealloc__(self):
@@ -381,6 +396,10 @@ _dist_copy.restype = c_void_p
 _dist_create = _inform.inform_dist_create
 _dist_create.argtypes = [POINTER(c_uint), c_ulong]
 _dist_create.restype = c_void_p
+
+_dist_approx = _inform.inform_dist_approximate
+_dist_approx.argtypes = [POINTER(c_double), c_ulong, c_double]
+_dist_approx.restype = c_void_p
 
 _dist_free = _inform.inform_dist_free
 _dist_free.argtypes = [c_void_p]
