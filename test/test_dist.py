@@ -115,6 +115,20 @@ class TestDist(unittest.TestCase):
         d = Dist.from_data([0,1,2], n=2)
         self.assertEqual([1,1,1], d[:])
 
+    def test_uniform_zero(self):
+        with self.assertRaises(ValueError):
+            Dist.uniform(0)
+
+    def test_uniform_negative(self):
+        with self.assertRaises(ValueError):
+            Dist.uniform(-1)
+
+    def test_uniform(self):
+        self.assertEqual([1],       Dist.uniform(1)[:])
+        self.assertEqual([1,1],     Dist.uniform(2)[:])
+        self.assertEqual([1,1,1],   Dist.uniform(3)[:])
+        self.assertEqual([1,1,1,1], Dist.uniform(4)[:])
+
     def test_resize_negative(self):
         d = Dist(3)
         with self.assertRaises(ValueError):

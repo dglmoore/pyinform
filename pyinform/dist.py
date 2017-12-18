@@ -82,6 +82,16 @@ class Dist:
             dist.resize(n)
         return dist
 
+    @classmethod
+    def uniform(cls, n):
+        """
+        Create a uniform distribution of a given size
+        """
+        if n == 0:
+            raise ValueError("support is zero")
+        elif n < 0:
+            raise ValueError("support is negative")
+        return Dist(pointer=_dist_uniform(n))
 
     def __dealloc__(self):
         """
@@ -421,6 +431,10 @@ _dist_infer.restype = c_void_p
 _dist_approx = _inform.inform_dist_approximate
 _dist_approx.argtypes = [POINTER(c_double), c_ulong, c_double]
 _dist_approx.restype = c_void_p
+
+_dist_uniform = _inform.inform_dist_uniform
+_dist_uniform.argtypes = [c_ulong]
+_dist_uniform.restype = c_void_p
 
 _dist_free = _inform.inform_dist_free
 _dist_free.argtypes = [c_void_p]
