@@ -18,7 +18,18 @@ class Dist:
     """
     def __init__(self, n=None, pointer=None):
         """
-        Construct a distribution.
+        Construct a distribution
+
+        .. rubric:: Examples:
+
+        ::
+
+            >>> Dist(5)
+            <pyinform.dist.Dist instance at 0x7f0c1f6a77a0>
+
+        :param int n: the size of the distributions's support
+        :raises ValueError: ``n <= 0``
+        :return: The distribution
         """
 
         if n is None and pointer is None:
@@ -40,6 +51,17 @@ class Dist:
     def from_hist(cls, hist):
         """
         Create a distribution from a histogram
+
+        .. rubric:: Examples:
+
+        ::
+
+            >>> d = Dist.from_hist([0,1,2,1])
+            >>> d[:]
+            [0, 1, 2, 1]
+
+        :param hist: the counts for each bin
+        :return: the distribution
         """
         hist = np.ascontiguousarray(hist, dtype=np.uint32)
         if hist.ndim == 0:
@@ -56,6 +78,24 @@ class Dist:
     def from_probs(cls, probs, tol=1e-9):
         """
         Create a distribution from probabilities
+
+        .. rubric:: Examples:
+
+        ::
+
+            >>> d = Dist.from_probs([0.2, 0.4, 0.4])
+            >>> d[:]
+            [1, 2, 2]
+            >>> d = Dist.from_probs([0.25, 0.125, 0.625])
+            >>> d[:]
+            [249999999, 124999999, 625000000]
+            >>> d = Dist.from_probs([0.625, 0.375])
+            >>> d[:]
+            [5, 3]
+
+        :param probs: the probability of each event
+        :param tol:   the acceptable tolerance
+        :return: the distribution
         """
         probs = np.ascontiguousarray(probs, dtype=np.float64)
         if probs.size == 0:
@@ -72,6 +112,21 @@ class Dist:
     def from_data(cls, seq, n=None):
         """
         Create a distribution from a sequence of observations
+
+        .. rubric:: Examples:
+
+        ::
+
+            >>> d = Dist.from_data([0,1,1,1,0,1,1])
+            >>> d[:]
+            [2, 5]
+            >>> d = Dist.from_data([0,1,1,1,0,1,1], n=4)
+            >>> d[:]
+            [2, 5, 0, 0]
+
+        :param seq: a sequence of observed events
+        :param n:   the minimum size of the support
+        :return: the inferred distribution
         """
         seq = np.ascontiguousarray(seq, dtype=np.uint32)
         if seq.size == 0:
@@ -86,6 +141,20 @@ class Dist:
     def uniform(cls, n):
         """
         Create a uniform distribution of a given size
+
+        .. rubric:: Examples:
+
+        ::
+
+            >>> d = Dist.uniform(2)
+            >>> d[:]
+            [1, 1]
+            >>> d = Dist.uniform(5)
+            >>> d[:]
+            [1, 1, 1, 1, 1]
+
+        :param n: the size of the support
+        :return: the uniform distribution
         """
         if n == 0:
             raise ValueError("support is zero")
@@ -105,7 +174,7 @@ class Dist:
         Determine the size of the support of the distribution.
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> len(Dist(5))
@@ -131,7 +200,7 @@ class Dist:
         - **is unchanged** - well, that sorta says it all, doesn't it?
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> d = Dist(5)
@@ -167,7 +236,7 @@ class Dist:
         Perform a deep copy of the distribution.
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> d = Dist([1,2,3])
@@ -200,7 +269,7 @@ class Dist:
         Return the number of observations made thus far.
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> d = Dist(5)
@@ -227,7 +296,7 @@ class Dist:
         if the support is not empty and at least one observation has been made.
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> d = Dist(5)
@@ -241,7 +310,7 @@ class Dist:
             True
 
         See also :py:meth:`.__len__` and :py:meth:`.counts`.
-    
+
         :return: a boolean signifying that the distribution is valid
         :rtype: bool
         """
@@ -252,7 +321,7 @@ class Dist:
         Get the number of observations made of *event*.
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> d = Dist(2)
@@ -276,7 +345,7 @@ class Dist:
            return [ self[i] for i in range(*event.indices(len(self))) ]
         elif event < 0 or event >= len(self):
             raise IndexError()
-        return _dist_get(self._dist, c_ulong(event))
+        return int(_dist_get(self._dist, c_ulong(event)))
 
     def __setitem__(self, event, value):
         """
@@ -285,7 +354,7 @@ class Dist:
         If *value* is negative, then the observation count is set to zero.
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> d = Dist(2)
@@ -304,9 +373,9 @@ class Dist:
             >>> list(d)
             [0, 2, 4, 6]
 
-        
+
         See also :py:meth:`.__getitem__` and :py:meth:`.tick`.
-        
+
         :param int event: the observed event
         :param int value: the number of observations
         :raises IndexError: if ``event < 0 or len(self) <= event``
@@ -322,7 +391,7 @@ class Dist:
         of observations of said *event*.
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> d = Dist(5)
@@ -342,7 +411,7 @@ class Dist:
             [1, 2, 3, 4]
 
         See also :py:meth:`.__getitem__` and :py:meth:`.__setitem__`.
-        
+
         :param int event: the observed event
         :return: the total number of observations of *event*
         :rtype: int
@@ -355,20 +424,35 @@ class Dist:
     def accumulate(self, events):
         """
         Accumulate events into a distribution
+
+        .. rubric:: Examples:
+
+        ::
+
+            >>> d = Dist(3)
+            >>> d[:]
+            [0, 0, 0]
+            >>> d.accumulate([0,1,1,0,2,1,2,2,1,2])
+            10
+            >>> d[:]
+            [2, 4, 4]
+
+        :param events: a sequence of observed events
+        :return: the number of events recorded
         """
         events = np.ascontiguousarray(events, dtype=np.uint32)
         data = events.ctypes.data_as(POINTER(c_uint))
         n = _dist_accumulate(self._dist, data, len(events))
         if n != len(events):
             raise IndexError()
-        return n
+        return int(n)
 
     def probability(self, event):
         """
         Compute the empiricial probability of an *event*.
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> d = Dist([1,1,1,1])
@@ -377,7 +461,7 @@ class Dist:
             ...
 
         See also :py:meth:`.__getitem__` and :py:meth:`.dump`.
-        
+
         :param int event: the observed event
         :return: the empirical probability *event*
         :rtype: float
@@ -396,7 +480,7 @@ class Dist:
         the result as an array.
 
         .. rubric:: Examples:
-        
+
         ::
 
             >>> d = Dist([1,2,2,1])
