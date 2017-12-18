@@ -350,6 +350,17 @@ class Dist:
             raise IndexError()
         return _dist_tick(self._dist, c_ulong(event))
 
+    def accumulate(self, events):
+        """
+        Accumulate events into a distribution
+        """
+        events = np.ascontiguousarray(events, dtype=np.uint32)
+        data = events.ctypes.data_as(POINTER(c_uint))
+        n = _dist_accumulate(self._dist, data, len(events))
+        if n != len(events):
+            raise IndexError()
+        return n
+
     def probability(self, event):
         """
         Compute the empiricial probability of an *event*.
@@ -471,3 +482,7 @@ _dist_prob.restype = c_double
 _dist_dump = _inform.inform_dist_dump
 _dist_dump.argtypes = [c_void_p, POINTER(c_double), c_ulong]
 _dist_dump.restype = c_ulong
+
+_dist_accumulate = _inform.inform_dist_accumulate
+_dist_accumulate.argtypes = [c_void_p, POINTER(c_uint), c_ulong]
+_dist_accumulate.restype = c_ulong

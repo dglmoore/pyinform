@@ -275,6 +275,34 @@ class TestDist(unittest.TestCase):
         self.assertEqual(2, d.counts())
         self.assertTrue(d.valid())
 
+    def test_accumulate_invalid(self):
+        d = Dist(3)
+
+        with self.assertRaises(IndexError):
+            d.accumulate(-1)
+
+        with self.assertRaises(IndexError):
+            d.accumulate(3)
+
+        self.assertEqual([0,0,0], d[:])
+
+        with self.assertRaises(IndexError):
+            d.accumulate([0,1,2,3])
+        self.assertEqual([1,1,1], d[:])
+
+        with self.assertRaises(IndexError):
+            d.accumulate([0,1,2,-1])
+        self.assertEqual([2,2,2], d[:])
+
+    def test_accumulate(self):
+        d = Dist(3)
+        self.assertEqual(0, d.accumulate([]))
+        self.assertEqual(3, d.accumulate([0,1,2]))
+        self.assertEqual([1,1,1], d[:])
+
+        self.assertEqual(4, d.accumulate([1,1,0,1]))
+        self.assertEqual([2,4,1], d[:])
+
     def test_probability_invalid(self):
         d = Dist(5)
         for i in range(len(d)):
