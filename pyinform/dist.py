@@ -16,63 +16,42 @@ class Dist:
     such as :py:func:`pyinform.activeinfo.active_info` to building
     distributions and then applying standard entropy measures.
     """
-    def __init__(self, n):
+    def __init__(self, n=None, pointer=None):
         """
         Construct a distribution.
-
-        If the parameter *n* is an integer, the distribution is constructed
-        with a zeroed support of size *n*. If *n* is a list or
-        ``numpy.ndarray``, of integer values, the sequence is treated as the 
-        underlying support. On the other hand, if *n* is a list or 
-        ``numpy.ndarray``, of floating point values, it is treated as a probability 
-        distribution and must sum to unity. Note, if a probability distribution 
-        is given as the underlying support, it will first be converted to a 
-        histogram with a precision of 9 significant figures.
-
-        .. rubric:: Examples:
-        
-        ::
-
-            >>> d = Dist(5)
-            >>> d = Dist([0,0,1,2])
-            >>> d = Dist([0.2,0.3,0.4,0.1])
-
-        :param n: the support for the distribution
-        :type n: int, list or ``numpy.ndarray``
-        :raises ValueError: if support is empty or multidimensional
-        :raises ValueError: if probability distribution does not sum to unity
-        :raises ValueError: if element type of provided array is neither float or int
-        :raises MemoryError: if memory allocation fails within the C call
         """
 
-        # Check if its a list or not
-        if isinstance(n, list) or isinstance(n, np.ndarray):
-            n = np.asarray(n)
-
-            # Make sure number of dimensions is one
-            if n.ndim != 1:
-                raise ValueError("support is multi-dimenstional")
-            elif n.size == 0:
-                raise ValueError("support is empty")
-
-            # If integer values, use input as underlying support
-            elif issubclass(n.dtype.type,(int,np.integer)):            
-                xs = np.ascontiguousarray(n,dtype=np.uint32) 
-
-            else:
-                raise ValueError("data type not understood")
-
-            data = xs.ctypes.data_as(POINTER(c_uint))
-            self._dist = _dist_create(data, xs.size)
-            
-        # The branch for a single integer
+        if n is None and pointer is None:
+            raise ValueError("must provide a support")
+        elif n is not None and pointer is not None:
+            raise ValueError("")
+        elif pointer is not None:
+            self._dist = pointer
+        elif n == 0:
+            raise ValueError("support is zero")
+        elif n < 0:
+            raise ValueError("support is negative")
         else:
-            if n <= 0:
-                raise ValueError("support is zero")
             self._dist = _dist_alloc(c_ulong(n))
+            if not self._dist:
+                raise MemoryError()
 
-        if not self._dist:
-            raise MemoryError()
+    @classmethod
+    def from_hist(cls, hist):
+        """
+        Create a distribution from a histogram
+        """
+        hist = np.asarray(hist)
+        if hist.ndim == 0:
+            raise ValueError("histogram is zero-dimensional")
+        elif hist.ndim > 1:
+            raise ValueError("histogram is multi-dimensional")
+        elif hist.size == 0:
+            raise ValueError("support is empty")
+        hist = np.ascontiguousarray(hist, dtype=np.uint32)
+        data = hist.ctypes.data_as(POINTER(c_uint))
+        dist = _dist_create(data, hist.size)
+        return Dist(pointer=dist)
 
     def __dealloc__(self):
         """

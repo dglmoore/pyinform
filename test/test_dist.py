@@ -16,56 +16,56 @@ class TestDist(unittest.TestCase):
         with self.assertRaises(ValueError):
             Dist(0)
 
-    def test_alloc_empty(self):
-        with self.assertRaises(ValueError):
-            Dist([])
-        
-        with self.assertRaises(ValueError):
-            Dist(np.array([]))
-
-    def test_alloc_multidimensional(self):
-        with self.assertRaises(ValueError):
-            Dist([[1,1,2,2]])
-
-        with self.assertRaises(ValueError):
-            Dist(np.array([[1,1,2,2]]))
-
-        with self.assertRaises(ValueError):
-            Dist([[1,2,3],[1,2]])
-
-        with self.assertRaises(ValueError):
-            Dist(np.asarray([[1,2,3],[1,2]]))
-
     def test_alloc_size(self):
         d = Dist(5)
         self.assertEqual(5, d.__len__())
         self.assertEqual(5, len(d))
 
-    def test_alloc_list(self):
+    def test_from_hist_empty(self):
+        with self.assertRaises(ValueError):
+            Dist.from_hist([])
+        
+        with self.assertRaises(ValueError):
+            Dist.from_hist(np.array([]))
+
+    def test_from_hist_multidimensional(self):
+        with self.assertRaises(ValueError):
+            Dist.from_hist([[1,1,2,2]])
+
+        with self.assertRaises(ValueError):
+            Dist.from_hist(np.array([[1,1,2,2]]))
+
+        with self.assertRaises(ValueError):
+            Dist.from_hist([[1,2,3],[1,2]])
+
+        with self.assertRaises(ValueError):
+            Dist.from_hist(np.asarray([[1,2,3],[1,2]]))
+
+    def test_from_hist_list(self):
         lst = [1,1,2,2]
-        d = Dist(lst)
+        d = Dist.from_hist(lst)
         self.assertEqual(4, len(d))
         for i in range(len(d)):
             self.assertEqual(lst[i], d[i])
 
-    def test_alloc_list_copies(self):
+    def test_from_hist_list_copies(self):
         lst = [0,0,0,0]
-        d = Dist(lst)
+        d = Dist.from_hist(lst)
         for i in range(len(d)):
             d[i] = i
             self.assertEqual(d[i], i)
             self.assertEqual(lst[i], 0)
 
-    def test_alloc_array(self):
+    def test_from_hist_array(self):
         arr = np.array([1,1,2,2], dtype=np.uint32)
-        d = Dist(arr)
+        d = Dist.from_hist(arr)
         self.assertEqual(4, len(d))
         for i in range(len(arr)):
             self.assertEqual(arr[i], d[i])
 
-    def test_alloc_array_copies(self):
+    def test_from_hist_array_copies(self):
         arr = np.array([0,0,0,0], dtype=np.uint32)
-        d = Dist(arr)
+        d = Dist.from_hist(arr)
         for i in range(len(d)):
             d[i] = i
             self.assertEqual(d[i], i)
@@ -211,9 +211,6 @@ class TestDist(unittest.TestCase):
         for i in range(len(d)):
             with self.assertRaises(ValueError):
                 d.probability(i)
-
-        with self.assertRaises(ValueError):
-            d = Dist([0.5,0.51])
 
     def test_probabilify_bounds_error(self):
         d = Dist(2)
