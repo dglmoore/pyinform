@@ -51,6 +51,7 @@ from .activeinfo import active_info
 from .blockentropy import block_entropy
 from .conditionalentropy import conditional_entropy
 from .dist import Dist
+from .effectiveinfo import effective_info
 from .entropyrate import entropy_rate
 from .error import InformError
 from .mutualinfo import mutual_info
