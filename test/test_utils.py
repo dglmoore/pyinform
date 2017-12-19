@@ -255,5 +255,48 @@ class TestEncoding(unittest.TestCase):
             state = decode(i, b=3, n=4)
             self.assertEqual(i, encode(state, b=3))
 
+
+class TestTPM(unittest.TestCase):
+    def test_empty(self):
+        with self.assertRaises(ValueError):
+            to_tpm([])
+
+        with self.assertRaises(ValueError):
+            to_tpm([[]])
+
+    def test_invalid_base(self):
+        with self.assertRaises(ValueError):
+            to_tpm([0,1,1,0], b=-1)
+
+    def test_invalid_state(self):
+        with self.assertRaises(InformError):
+            to_tpm([0,1,1,2], b=2)
+        with self.assertRaises(InformError):
+            to_tpm([0,-1,0,1])
+
+    def test_zero_row(self):
+        with self.assertRaises(InformError):
+            to_tpm([[1,1,1],[1,1,0]])
+
+    def test_base_2(self):
+        self.assertTrue(np.allclose(to_tpm([0,0,1,1,0,1,0,1,1,1]),
+                                    [[0.25, 0.75], [0.4, 0.6]]))
+
+        self.assertTrue(np.allclose(to_tpm([[0,0,1,1,0],[1,0,1,1,1]]),
+                                    [[1.0/3, 2.0/3], [0.4, 0.6]]))
+
+    def test_base_3(self):
+        self.assertTrue(np.allclose(to_tpm([0,1,2,2,1,1,0,0,1,2]),
+                                    [[0.333333, 0.666667, 0.000000],
+                                     [0.250000, 0.250000, 0.500000],
+                                     [0.000000, 0.500000, 0.500000]],
+                                    rtol=1e-6))
+
+        self.assertTrue(np.allclose(to_tpm([[0,1,2,2,1],[1,0,0,1,2]]),
+                                    [[0.333333, 0.666667, 0.000000],
+                                     [0.333333, 0.000000, 0.666667],
+                                     [0.000000, 0.500000, 0.500000]],
+                                    rtol=1e-6))
+
 if __name__ == "__main__":
     unittest.main()
