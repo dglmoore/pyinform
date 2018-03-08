@@ -505,6 +505,25 @@ class Dist:
             raise RuntimeError("cannot dump the distribution")
         return probs
 
+    def __repr__(self):
+        """
+        Return a `eval`-able string representation of the distribution.
+
+        .. rubric:: Examples:
+
+        ::
+
+            >>> dist = Dist.from_hist([0,1,1,0,1])
+            >>> dist
+            Dist.from_hist([0, 1, 1, 0, 1])
+            >>> dist = Dist.from_data([1,2,4])
+            >>> dist
+            Dist.from_hist([0, 1, 1, 0, 1])
+
+        :return: an `eval`-able string
+        """
+        return 'Dist.from_hist({})'.format(self[:])
+
 _dist_alloc = _inform.inform_dist_alloc
 _dist_alloc.argtypes = [c_ulong]
 _dist_alloc.restype = c_void_p
