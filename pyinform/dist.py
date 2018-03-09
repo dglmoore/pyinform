@@ -179,10 +179,10 @@ class Dist:
 
             >>> len(Dist(5))
             5
-            >>> len(Dist[0,1,5])
+            >>> len(Dist.from_hist([0,1,5]))
             3
 
-        See also :py:meth:`.counts`.
+        See also :py:attr:`.counts`.
 
         :return: the size of the support
         :rtype: int
@@ -213,7 +213,7 @@ class Dist:
 
         ::
 
-            >>> d = Dist([1,2,3,4])
+            >>> d = Dist.from_hist([1,2,3,4])
             >>> d.resize(2)
             >>> list(d)
             [1, 2]
@@ -239,7 +239,7 @@ class Dist:
 
         ::
 
-            >>> d = Dist([1,2,3])
+            >>> d = Dist.from_hist([1,2,3])
             >>> e = d
             >>> e[0] = 3
             >>> list(e)
@@ -278,7 +278,7 @@ class Dist:
 
         ::
 
-            >>> d = Dist([1,0,3,2])
+            >>> d = Dist.from_hist([1,0,3,2])
             >>> d.counts
             6
 
@@ -305,11 +305,11 @@ class Dist:
 
         ::
 
-            >>> d = Dist([0,0,0,1])
+            >>> d = Dist.from_hist([0,0,0,1])
             >>> d.is_valid
             True
 
-        See also :py:meth:`.__len__` and :py:meth:`.counts`.
+        See also :py:meth:`.__len__` and :py:attr:`.counts`.
 
         :return: a boolean signifying that the distribution is valid
         :rtype: bool
@@ -330,11 +330,12 @@ class Dist:
 
         ::
 
-            >>> d = Dist([0,1])
+            >>> d = Dist.from_hist([0,1])
             >>> (d[0], d[1])
             (0, 1)
 
-        See also :py:meth:`.__setitem__`, :py:meth:`.tick` and :py:meth:`.probability`.
+        See also :py:meth:`.__setitem__`, :py:meth:`.tick` and
+        :py:meth:`.probability`.
 
         :param int event: the observed event
         :return: the number of observations of *event*
@@ -366,7 +367,7 @@ class Dist:
 
         ::
 
-            >>> d = Dist([0,1,2,3])
+            >>> d = Dist.from_hist([0,1,2,3])
             >>> for i, n in enumerate(d):
             ...     d[i] = 2 * n
             ...
@@ -403,7 +404,7 @@ class Dist:
 
         ::
 
-            >>> d = Dist([0,1,2,3])
+            >>> d = Dist.from_hist([0,1,2,3])
             >>> for i, _ in enumerate(d):
             ...     assert(d.tick(i) == i + 1)
             ...
@@ -455,7 +456,7 @@ class Dist:
 
         ::
 
-            >>> d = Dist([1,1,1,1])
+            >>> d = Dist.uniform(4)
             >>> for i, _ in enumerate(d):
             ...     assert(d.probability(i) == 1./4)
             ...
@@ -483,7 +484,7 @@ class Dist:
 
         ::
 
-            >>> d = Dist([1,2,2,1])
+            >>> d = Dist.from_hist([1,2,2,1])
             >>> d.dump()
             array([ 0.16666667,  0.33333333,  0.33333333,  0.16666667])
 
