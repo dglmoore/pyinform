@@ -9,6 +9,10 @@ from pyinform.error import ErrorCode, error_guard
 
 def coalesce_series(series):
     """
+    .. testsetup::
+
+        from pyinform import utils
+
     Coalesce a timeseries into as few contiguous states as possible.
     
     The magic of information measures is that the actual values of a time series

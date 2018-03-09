@@ -15,6 +15,11 @@ class Dist:
     the standard entropy measures on distributions. This reduces functions
     such as :py:func:`pyinform.activeinfo.active_info` to building
     distributions and then applying standard entropy measures.
+
+    .. testsetup::
+
+        from pyinform import Dist
+
     """
     def __init__(self, n=None, pointer=None):
         """
@@ -22,10 +27,10 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> Dist(5)
-            <pyinform.dist.Dist instance at 0x7f0c1f6a77a0>
+            Dist.from_hist([0, 0, 0, 0, 0])
 
         :param int n: the size of the distributions's support
         :raises ValueError: ``n <= 0``
@@ -54,7 +59,7 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist.from_hist([0,1,2,1])
             >>> d[:]
@@ -81,17 +86,14 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
-            >>> d = Dist.from_probs([0.2, 0.4, 0.4])
-            >>> d[:]
-            [1, 2, 2]
-            >>> d = Dist.from_probs([0.25, 0.125, 0.625])
-            >>> d[:]
-            [249999999, 124999999, 625000000]
-            >>> d = Dist.from_probs([0.625, 0.375])
-            >>> d[:]
-            [5, 3]
+            >>> Dist.from_probs([0.2, 0.4, 0.4])
+            Dist.from_hist([1, 2, 2])
+            >>> Dist.from_probs([0.25, 0.125, 0.625])
+            Dist.from_hist([249999999, 124999999, 625000000])
+            >>> Dist.from_probs([0.625, 0.375])
+            Dist.from_hist([5, 3])
 
         :param probs: the probability of each event
         :param tol:   the acceptable tolerance
@@ -115,14 +117,12 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
-            >>> d = Dist.from_data([0,1,1,1,0,1,1])
-            >>> d[:]
-            [2, 5]
-            >>> d = Dist.from_data([0,1,1,1,0,1,1], n=4)
-            >>> d[:]
-            [2, 5, 0, 0]
+            >>> Dist.from_data([0,1,1,1,0,1,1])
+            Dist.from_hist([2, 5])
+            >>> Dist.from_data([0,1,1,1,0,1,1], n=4)
+            Dist.from_hist([2, 5, 0, 0])
 
         :param seq: a sequence of observed events
         :param n:   the minimum size of the support
@@ -144,14 +144,12 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
-            >>> d = Dist.uniform(2)
-            >>> d[:]
-            [1, 1]
-            >>> d = Dist.uniform(5)
-            >>> d[:]
-            [1, 1, 1, 1, 1]
+            >>> Dist.uniform(2)
+            Dist.from_hist([1, 1])
+            >>> Dist.uniform(5)
+            Dist.from_hist([1, 1, 1, 1, 1])
 
         :param n: the size of the support
         :return: the uniform distribution
@@ -175,7 +173,7 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> len(Dist(5))
             5
@@ -201,7 +199,7 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist(5)
             >>> d.resize(3)
@@ -211,15 +209,15 @@ class Dist:
             >>> len(d)
             8
 
-        ::
+        .. doctest::
 
             >>> d = Dist.from_hist([1,2,3,4])
             >>> d.resize(2)
-            >>> list(d)
-            [1, 2]
+            >>> d
+            Dist.from_hist([1, 2])
             >>> d.resize(4)
-            >>> list(d)
-            [1, 2, 0, 0]
+            >>> d
+            Dist.from_hist([1, 2, 0, 0])
 
         :param int n: the desired size of the support
         :raises ValueError: if the requested size is zero
@@ -237,24 +235,25 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist.from_hist([1,2,3])
             >>> e = d
             >>> e[0] = 3
-            >>> list(e)
-            [3, 2, 3]
-            >>> list(d)
-            [3, 2, 3]
+            >>> e
+            Dist.from_hist([3, 2, 3])
+            >>> d
+            Dist.from_hist([3, 2, 3])
 
-        ::
+        .. doctest::
 
-            >>> f = d.copy()
-            >>> f[0] = 1
-            >>> list(f)
-            [1, 2, 3]
-            >>> list(d)
-            [3, 2, 3]
+            >>> d = Dist.from_hist([1,2,3])
+            >>> e = d.copy()
+            >>> e[0] = 1
+            >>> e
+            Dist.from_hist([1, 2, 3])
+            >>> d
+            Dist.from_hist([1, 2, 3])
 
         :returns: the copied distribution
         :rtype: :py:class:`pyinform.dist.Dist`
@@ -270,13 +269,13 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist(5)
             >>> d.counts
             0
 
-        ::
+        .. doctest::
 
             >>> d = Dist.from_hist([1,0,3,2])
             >>> d.counts
@@ -287,7 +286,7 @@ class Dist:
         :return: the number of observations
         :rtype: int
         """
-        return _dist_counts(self._dist)
+        return int(_dist_counts(self._dist))
 
     @property
     def is_valid(self):
@@ -297,13 +296,13 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist(5)
             >>> d.is_valid
             False
 
-        ::
+        .. doctest::
 
             >>> d = Dist.from_hist([0,0,0,1])
             >>> d.is_valid
@@ -322,13 +321,13 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist(2)
             >>> (d[0], d[1])
             (0, 0)
 
-        ::
+        .. doctest::
 
             >>> d = Dist.from_hist([0,1])
             >>> (d[0], d[1])
@@ -356,23 +355,23 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
-            >>> d = Dist(2)
+            >>> d = Dist(5)
             >>> for i, _ in enumerate(d):
             ...     d[i] = i*i
             ...
-            >>> list(d)
-            [0, 1]
+            >>> d
+            Dist.from_hist([0, 1, 4, 9, 16])
 
-        ::
+        .. doctest::
 
             >>> d = Dist.from_hist([0,1,2,3])
             >>> for i, n in enumerate(d):
             ...     d[i] = 2 * n
             ...
-            >>> list(d)
-            [0, 2, 4, 6]
+            >>> d
+            Dist.from_hist([0, 2, 4, 6])
 
 
         See also :py:meth:`.__getitem__` and :py:meth:`.tick`.
@@ -393,23 +392,23 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist(5)
             >>> for i, _ in enumerate(d):
             ...     assert(d.tick(i) == 1)
             ...
-            >>> list(d)
-            [1, 1, 1, 1, 1]
+            >>> d
+            Dist.from_hist([1, 1, 1, 1, 1])
 
-        ::
+        .. doctest::
 
             >>> d = Dist.from_hist([0,1,2,3])
             >>> for i, _ in enumerate(d):
             ...     assert(d.tick(i) == i + 1)
             ...
-            >>> list(d)
-            [1, 2, 3, 4]
+            >>> d
+            Dist.from_hist([1, 2, 3, 4])
 
         See also :py:meth:`.__getitem__` and :py:meth:`.__setitem__`.
 
@@ -420,7 +419,7 @@ class Dist:
         """
         if event < 0 or event >= len(self):
             raise IndexError()
-        return _dist_tick(self._dist, c_ulong(event))
+        return int(_dist_tick(self._dist, c_ulong(event)))
 
     def accumulate(self, events):
         """
@@ -428,15 +427,15 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist(3)
-            >>> d[:]
-            [0, 0, 0]
+            >>> d
+            Dist.from_hist([0, 0, 0])
             >>> d.accumulate([0,1,1,0,2,1,2,2,1,2])
             10
-            >>> d[:]
-            [2, 4, 4]
+            >>> d
+            Dist.from_hist([2, 4, 4])
 
         :param events: a sequence of observed events
         :return: the number of events recorded
@@ -454,7 +453,7 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist.uniform(4)
             >>> for i, _ in enumerate(d):
@@ -482,11 +481,11 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
             >>> d = Dist.from_hist([1,2,2,1])
             >>> d.dump()
-            array([ 0.16666667,  0.33333333,  0.33333333,  0.16666667])
+            array([0.16666667, 0.33333333, 0.33333333, 0.16666667])
 
         See also :py:meth:`.probability`.
 
@@ -512,13 +511,13 @@ class Dist:
 
         .. rubric:: Examples:
 
-        ::
+        .. doctest::
 
-            >>> dist = Dist.from_hist([0,1,1,0,1])
-            >>> dist
+            >>> d = Dist.from_hist([0,1,1,0,1])
+            >>> d
             Dist.from_hist([0, 1, 1, 0, 1])
-            >>> dist = Dist.from_data([1,2,4])
-            >>> dist
+            >>> d = Dist.from_data([1,2,4])
+            >>> d
             Dist.from_hist([0, 1, 1, 0, 1])
 
         :return: an `eval`-able string

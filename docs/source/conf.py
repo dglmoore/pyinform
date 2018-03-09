@@ -34,6 +34,7 @@ extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
+    'sphinx.ext.doctest',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -52,8 +53,8 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'PyInform'
-copyright = '2016, ELIFE'
-author = 'ELife ASU'
+copyright = '2016-2018, ELIFE'
+author = 'Douglas G. Moore <douglas.g.moore@asu.edu>'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the

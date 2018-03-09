@@ -17,13 +17,15 @@ You can construct a distribution with a specified number of unique observables.
 This construction method results in an *invalid* distribution as no
 observations have been made thus far. ::
 
+.. doctest::
+
     >>> d = Dist(5)
     >>> d
     Dist.from_hist([0, 0, 0, 0, 0])
     >>> d.is_valid
     False
     >>> d.counts
-    0L
+    0
     >>> len(d)
     5
 
@@ -32,17 +34,21 @@ ways:
 
 - From a list of observation counts (i.e. a histogram): ::
 
+.. doctest::
+
     >>> d = Dist.from_hist([0,0,1,2,1,0,0])
     >>> d
     Dist.from_hist([0, 0, 1, 2, 1, 0, 0])
     >>> d.is_valid
     True
     >>> d.counts
-    4L
+    4
     >>> len(d)
     7
 
 - Approximate from a list of probabilities: ::
+
+.. doctest::
 
     >>> d = Dist.from_probs([0.25, 0.125, 0.625])
     >>> d
@@ -50,11 +56,13 @@ ways:
     >>> d.is_valid
     True
     >>> d.counts
-    999999998L
+    999999998
     >>> len(d)
     3
 
 - Estimate from a list of observed states: ::
+
+.. doctest::
 
     >>> d = Dist.from_data([0,0,1,2,2,2,1,2])
     >>> d
@@ -62,11 +70,13 @@ ways:
     >>> d.is_valid
     True
     >>> d.counts
-    8L
+    8
     >>> len(d)
     3
 
 - A uniform distribution over a given support: ::
+
+.. doctest::
 
     >>> d = Dist.uniform(4)
     >>> d
@@ -74,7 +84,7 @@ ways:
     >>> d.is_valid
     True
     >>> d.counts
-    4L
+    4
     >>> len(d)
     4
 
@@ -84,6 +94,8 @@ Example 2: Making Observations
 Once a distribution has been constructed, we can begin making observations.
 There are a few methods for doing so. The first uses the standard indexing
 operations, treating the distribution similarly to a list: ::
+
+.. doctest::
 
     >>> d = Dist(5)
     >>> for i in range(len(d)):
@@ -95,31 +107,35 @@ operations, treating the distribution similarly to a list: ::
 The second method is to make *incremental* changes to the distribution. This
 is useful when making observations of data as it is generated: ::
 
+.. doctest::
+
     >>> obs = [1,0,1,2,2,3,2,3,2,2]
     >>> d = Dist(max(obs) + 1)
     >>> for x in obs:
     ...     d.tick(x)
     ... 
-    1L # a 1 was observed
-    1L
-    2L # a 2 was observed
-    1L
-    2L
-    1L
-    3L
-    2L
-    4L
-    5L
+    1
+    1
+    2
+    1
+    2
+    1
+    3
+    2
+    4
+    5
     >>> d
     Dist.from_hist([1, 2, 5, 2])
 
 A third method essentially wrapps the above `for`-loop to provide a method of
 recording data from a time time series: ::
 
+.. doctest::
+
     >>> obs = [1,0,1,2,2,3,2,3,2,2]
     >>> d = Dist(max(obs) + 1)
     >>> d.accumulate(obs)
-    10 # 10 observations were made
+    10
     >>> d
     Dist.from_hist([1, 2, 5, 2])
 
@@ -129,6 +145,8 @@ Example 3: Probabilities
 Once some observations have been made, we can start asking for probabilities.
 As in the previous examples, there are multiple ways of doing this. The first
 is to just ask for the probability of a given event. ::
+
+.. doctest::
 
     >>> d = Dist.from_hist([3,0,1,2])
     >>> d.probability(0)
@@ -144,9 +162,11 @@ is to just ask for the probability of a given event. ::
 
 Sometimes it is nice to just dump the probabilities out to an array: ::
 
+.. doctest::
+
     >>> d = Dist.from_hist([3,0,1,2])
     >>> d.dump()
-    array([ 0.5       ,  0.        ,  0.16666667,  0.33333333])
+    array([0.5       , 0.        , 0.16666667, 0.33333333])
 
 Example 4: Shannon Entropy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -154,6 +174,8 @@ Example 4: Shannon Entropy
 Once you have a distribution you can do lots of fun things with it. In
 this example, we will compute the shannon entropy of a timeseries of
 observed values. ::
+
+.. doctest::
 
     >>> from math import log
     >>> d = Dist.from_data([1,0,1,2,2,1,2,3,2,2])
@@ -166,6 +188,8 @@ observed values. ::
 
 Of course **PyInform** provides a function for this:
 :py:func:`pyinform.shannon.entropy`. ::
+
+.. doctest::
 
     >>> from pyinform.shannon import entropy
     >>> d = Dist.from_data([1,0,1,2,2,1,2,3,2,2])
