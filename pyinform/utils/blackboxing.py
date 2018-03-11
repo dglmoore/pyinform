@@ -31,9 +31,7 @@ def black_box(series, b=None, k=None, l=None):
         if k is not None and k.shape != l.shape:
             raise ValueError('if provided, `k` and `l` must have the same shape')
 
-    if series.ndim == 0:
-        raise ValueError('empty time series')
-    elif series.ndim == 1:
+    if series.ndim == 1:
         u, v, w = 1, 1, len(series)
         if b is None:
             b = np.ascontiguousarray([np.max(series) + 1], np.int32)
@@ -72,7 +70,7 @@ def black_box(series, b=None, k=None, l=None):
             b = np.ascontiguousarray(list(map(np.max, series)), dtype=np.int32)
             b += 1
     else:
-        raise ValueError('only single series or multiple ensemble supported')
+        raise ValueError('series dimension is too high')
 
     if len(b) != u:
         raise ValueError('shape mismatch: series and b are incompatible')

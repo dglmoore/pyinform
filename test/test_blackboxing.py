@@ -92,6 +92,67 @@ class TestBlackBoxing(unittest.TestCase):
         with self.assertRaises(InformError):
             black_box(series, b=(2,3), k=(10,5), l=(4,6))
 
+    def test_flattens_base(self):
+        series = [[0,1,0], [1,2,1]]
+        self.assertTrue(np.array_equal(series, black_box(series, b=(3,))))
+
+    def test_flattens_history(self):
+        series = [[0,1,0], [1,2,1]]
+        self.assertTrue(np.array_equal(series, black_box(series, k=(1,))))
+
+    def test_flattens_future(self):
+        series = [[0,1,0], [1,2,1]]
+        self.assertTrue(np.array_equal(series, black_box(series, l=(0,))))
+
+    def test_base_history_incompatible(self):
+        series = [[0,1,0], [1,2,1]]
+        with self.assertRaises(ValueError):
+            black_box(series, b=3, k=(1,1))
+
+    def test_base_future_incompatible(self):
+        series = [[0,1,0], [1,2,1]]
+        with self.assertRaises(ValueError):
+            black_box(series, b=3, l=(1,1))
+
+    def test_history_future_incompatible(self):
+        series = [[0,1,0], [1,2,1]]
+        with self.assertRaises(ValueError):
+            black_box(series, k=1, l=(1,1))
+
+    def test_high_series_dimension(self):
+        with self.assertRaises(ValueError):
+            black_box([
+                [
+                    [[1,0,1], [0,0,1]],
+                    [[0,1,0], [0,0,0]]
+                ],
+                [
+                    [[1,0,1], [0,0,1]],
+                    [[0,1,0], [0,0,0]]
+                ],
+            ])
+
+    def test_series_base_incompatible(self):
+        with self.assertRaises(ValueError):
+            black_box([0,1,2], b=(2,3))
+
+        with self.assertRaises(ValueError):
+            black_box([[[0,1,2]],[[0,0,1]]], b=3)
+
+    def test_series_history_incompatible(self):
+        with self.assertRaises(ValueError):
+            black_box([0,1,2], k=(2,3))
+
+        with self.assertRaises(ValueError):
+            black_box([[[0,1,2]],[[0,0,1]]], k=3)
+
+    def test_series_history_incompatible(self):
+        with self.assertRaises(ValueError):
+            black_box([0,1,2], l=(2,3))
+
+        with self.assertRaises(ValueError):
+            black_box([[[0,1,2]],[[0,0,1]]], l=3)
+
     def test_single_series(self):
         series = [0,1,1,0,1,1,0,0]
         self.assertTrue(
