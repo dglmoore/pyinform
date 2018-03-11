@@ -37,12 +37,16 @@ def black_box(series, b=None, k=None, l=None):
         u, v, w = 1, 1, len(series)
         if b is None:
             b = np.ascontiguousarray([np.max(series) + 1], np.int32)
+    elif series.ndim == 2:
+        v = 1
+        u, w = series.shape
+        if b is None:
+            b = np.ascontiguousarray(np.max(series, 1), dtype=np.int32) + 1
     elif series.ndim == 3:
         u, v, w = series.shape
         if b is None:
-            b = np.ascontiguousarray(
-                    list(map(lambda xs: np.max(xs) + 1, series)),
-                dtype=np.int32)
+            b = np.ascontiguousarray(list(map(np.max, series)), dtype=np.int32)
+            b += 1
     else:
         raise ValueError('only single series or multiple ensemble supported')
 

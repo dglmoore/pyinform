@@ -20,10 +20,10 @@ class TestBlackBoxing(unittest.TestCase):
 
     def test_invalid_state(self):
         with self.assertRaises(InformError):
-            black_box([[0, 2, 1], [1, 0, 1]])
+            black_box([[0, 2, 1], [1, 0, 1]], b=(2,2))
 
         with self.assertRaises(InformError):
-            black_box([[0, 1, 1], [1, 0, 2]])
+            black_box([[0, 1, 1], [1, 0, 2]], b=(2,2))
 
     def test_invalid_history(self):
         series = [[0,1,1], [1,0,1]]
@@ -63,7 +63,7 @@ class TestBlackBoxing(unittest.TestCase):
         with self.assertRaises(InformError):
             black_box(series, k=(1,4))
 
-        with self.assertRaises(InformError):
+        with self.assertRaises(ValueError):
             black_box(series, k=(0,1), l=(4,0))
 
         with self.assertRaises(InformError):
@@ -124,92 +124,107 @@ class TestBlackBoxing(unittest.TestCase):
             [0,1,1,0,1,1,0,0],
             [0,0,1,1,0,1,0,1],
         ]
-        self.assertEqual(series, black_box(series))
-        self.assertEqual(series, black_box(series, k=1))
-        self.assertEqual([
+        self.assertTrue(np.array_equal(series, black_box(series)))
+        self.assertTrue(np.array_equal(series, black_box(series, k=1)))
+        self.assertTrue(np.array_equal([
             [1,3,2,1,3,2,0],
             [0,1,3,2,1,2,1],
-        ], black_box(series, k=2))
-        self.assertEqual([
+        ], black_box(series, k=2)))
+        self.assertTrue(np.array_equal([
             [1,3,2,1,3,2,0],
             [0,1,3,2,1,2,1],
-        ], black_box(series, k=1, l=1))
-        self.assertEqual([
+        ], black_box(series, k=1, l=1)))
+        self.assertTrue(np.array_equal([
             [1,3,2,1,3,2,0],
             [0,1,3,2,1,2,1],
-        ], black_box(series, l=1))
-        self.assertEqual([
+        ], black_box(series, l=1)))
+        self.assertTrue(np.array_equal([
             [3,6,5,3,6,4],
             [1,3,6,5,2,5],
-        ], black_box(series, k=3))
-        self.assertEqual([
+        ], black_box(series, k=3)))
+        self.assertTrue(np.array_equal([
             [3,6,5,3,6,4],
             [1,3,6,5,2,5],
-        ], black_box(series, k=2, l=1))
-        self.assertEqual([
+        ], black_box(series, k=2, l=1)))
+        self.assertTrue(np.array_equal([
             [3,6,5,3,6,4],
             [1,3,6,5,2,5],
-        ]), black_box(series, k=1, l=2)
-        self.assertEqual([
+        ]), black_box(series, k=1, l=2))
+        self.assertTrue(np.array_equal([
             [3,6,5,3,6,4],
             [1,3,6,5,2,5],
-        ], black_box(series, l=2))
+        ], black_box(series, l=2)))
 
         series = [
             [0,1,2,0,1,1,0,2],
             [2,1,1,2,0,0,1,2],
         ]
-        self.assertEqual([
+        self.assertTrue(np.array_equal([
             [ 5,15,19, 4,12,11],
             [22,14,15,18, 1, 5],
-        ], black_box(series, k=1, l=2))
+        ], black_box(series, k=1, l=2)))
 
     def test_multiple_series(self):
         series = [
             [0,1,1,0,1,1,0,0],
             [0,0,1,1,0,1,0,1],
         ]
-        self.assertEqual([0,2,3,1,2,3,0,1], black_box(series))
-        self.assertEqual([0,2,3,1,2,3,0,1], black_box(series, k=(1,1)))
-        self.assertEqual([2,7,5,2,7,4,1], black_box(series, k=(2,1)))
-        self.assertEqual([4,5,3,6,5,2,1], black_box(series, k=(1,2)))
-        self.assertEqual([4,13,11,6,13,10,1], black_box(series, k=(2,2)))
-        self.assertEqual([2,6,5,3,6,5,0], black_box(series, l=(1,0)))
-        self.assertEqual([2,6,5,3,6,5,0], black_box(series, k=(1,1), l=(1,0)))
-        self.assertEqual([0,5,7,2,5,6,1], black_box(series, l=(0,1)))
-        self.assertEqual([0,5,7,2,5,6,1], black_box(series, k=(1,1), l=(0,1)))
-        self.assertEqual([4,13,11,6,13,10,1], black_box(series, l=(1,1)))
-        self.assertEqual([4,13,11,6,13,10,1],
-                black_box(series, k=(1,1), l=(1,1)))
-        self.assertEqual([6,13,11,6,13,8], black_box(series, k=(2,1), l=(1,0)))
+        self.assertTrue(
+                np.array_equal([0,2,3,1,2,3,0,1], black_box(series)))
+        self.assertTrue(
+                np.array_equal([0,2,3,1,2,3,0,1], black_box(series, k=(1,1))))
+        self.assertTrue(
+                np.array_equal([2,7,5,2,7,4,1], black_box(series, k=(2,1))))
+        self.assertTrue(
+                np.array_equal([4,5,3,6,5,2,1], black_box(series, k=(1,2))))
+        self.assertTrue(
+                np.array_equal([4,13,11,6,13,10,1], black_box(series, k=(2,2))))
+        self.assertTrue(
+                np.array_equal([2,6,5,3,6,5,0], black_box(series, l=(1,0))))
+        self.assertTrue(
+                np.array_equal([2,6,5,3,6,5,0],
+                    black_box(series, k=(1,1), l=(1,0))))
+        self.assertTrue(
+                np.array_equal([0,5,7,2,5,6,1], black_box(series, l=(0,1))))
+        self.assertTrue(
+                np.array_equal([0,5,7,2,5,6,1],
+                    black_box(series, k=(1,1), l=(0,1))))
+        self.assertTrue(
+                np.array_equal([4,13,11,6,13,10,1], black_box(series, l=(1,1))))
+        self.assertTrue(
+                np.array_equal([4,13,11,6,13,10,1],
+                    black_box(series, k=(1,1), l=(1,1))))
+        self.assertTrue(
+                np.array_equal([6,13,11,6,13,8],
+                    black_box(series, k=(2,1), l=(1,0))))
 
         series = [
             [0,1,2,0,1,1,0,2],
             [0,0,1,1,0,1,0,1],
         ]
-        self.assertEqual([10,31,39,8,25,22],
-                black_box(series, k=(2,1), l=(1,0)))
+        self.assertTrue(np.array_equal([10,31,39,8,25,22],
+                black_box(series, k=(2,1), l=(1,0))))
 
         series = [
             [0,1,1,0,1,1,0,0],
             [0,2,1,1,0,2,0,1],
         ]
-        self.assertEqual([11,19,16,9,20,12],
-                black_box(series, k=(2,1), l=(1,0)))
+        self.assertTrue(np.array_equal([11,19,16,9,20,12],
+                black_box(series, k=(2,1), l=(1,0))))
 
         series = [
             [0,3,1,0,1,1,2,0],
             [0,1,1,1,0,1,0,1],
         ]
-        self.assertEqual([27,105,35,10,45,48],
-                black_box(series, k=(2,1), l=(1,0)))
+        self.assertTrue(np.array_equal([27,105,35,10,45,48],
+                black_box(series, k=(2,1), l=(1,0))))
 
         series = [
             [0,1,1,1,0,1,0,1],
             [0,3,1,0,1,1,2,0],
         ]
-        self.assertEqual([15,29,24,21,9,22],
-                black_box(series, k=(2,1), l=(1,0)))
+        self.assertTrue(np.array_equal([15,29,24,21,9,22],
+                black_box(series, k=(2,1), l=(1,0))))
 
     def test_multiple_series_ensemble(self):
         series = [
