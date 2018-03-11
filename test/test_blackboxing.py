@@ -2,6 +2,7 @@
 # Use of this source code is governed by a MIT
 # license that can be found in the LICENSE file.
 import unittest
+import numpy as np
 from pyinform.utils import black_box
 from pyinform.error import InformError
 
@@ -28,31 +29,31 @@ class TestBlackBoxing(unittest.TestCase):
         series = [[0,1,1], [1,0,1]]
 
         with self.assertRaises(InformError):
-            block_box(series, k=(0,0))
+            black_box(series, k=(0,0))
 
         with self.assertRaises(InformError):
-            block_box(series, k=(0,1))
+            black_box(series, k=(0,1))
 
         with self.assertRaises(InformError):
-            block_box(series, k=(1,0))
+            black_box(series, k=(1,0))
 
         with self.assertRaises(InformError):
-            block_box(series, k=(-1,1))
+            black_box(series, k=(-1,1))
 
         with self.assertRaises(InformError):
-            block_box(series, k=(-1,-1))
+            black_box(series, k=(-1,-1))
 
     def test_invalid_future(self):
         series = [[0,1,1], [1,0,1]]
 
         with self.assertRaises(InformError):
-            block_box(series, l=(-1,0))
+            black_box(series, l=(-1,0))
 
         with self.assertRaises(InformError):
-            block_box(series, l=(0,-1))
+            black_box(series, l=(0,-1))
 
         with self.assertRaises(InformError):
-            block_box(series, l=(-1,-1))
+            black_box(series, l=(-1,-1))
 
     def test_long_history_future(self):
         series = [[0,1,1], [1,0,1]]
@@ -85,28 +86,40 @@ class TestBlackBoxing(unittest.TestCase):
             [0,0,1,1,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0],
         ]
         with self.assertRaises(InformError):
-            block_box(series, k=(15,16))
+            black_box(series, k=(15,16))
         with self.assertRaises(InformError):
-            block_box(series, b=(2,4), k=(15,8))
+            black_box(series, b=(2,4), k=(15,8))
         with self.assertRaises(InformError):
-            block_box(series, b=(2,3), k=(10,5), l=(4,6))
+            black_box(series, b=(2,3), k=(10,5), l=(4,6))
 
     def test_single_series(self):
         series = [0,1,1,0,1,1,0,0]
-        self.assertEqual(series, black_box(series))
-        self.assertEqual(series, black_box(series, k=1))
-        self.assertEqual(series, black_box(series, k=1, l=0))
-        self.assertEqual([1,3,2,1,3,2,0], black_box(series, k=2))
-        self.assertEqual([1,3,2,1,3,2,0], black_box(series, k=1, l=1))
-        self.assertEqual([1,3,2,1,3,2,0], black_box(series, l=1))
-        self.assertEqual([3,6,5,3,6,4], black_box(series, k=3))
-        self.assertEqual([3,6,5,3,6,4], black_box(series, k=1, l=2))
-        self.assertEqual([3,6,5,3,6,4], black_box(series, l=2))
+
+        print(black_box(series))
+        self.assertTrue(
+                np.array_equal(series, black_box(series)))
+        self.assertTrue(
+                np.array_equal(series, black_box(series, k=1)))
+        self.assertTrue(
+                np.array_equal(series, black_box(series, k=1, l=0)))
+        self.assertTrue(
+                np.array_equal([1,3,2,1,3,2,0], black_box(series, k=2)))
+        self.assertTrue(
+                np.array_equal([1,3,2,1,3,2,0], black_box(series, k=1, l=1)))
+        self.assertTrue(
+                np.array_equal([1,3,2,1,3,2,0], black_box(series, l=1)))
+        self.assertTrue(
+                np.array_equal([3,6,5,3,6,4], black_box(series, k=3)))
+        self.assertTrue(
+                np.array_equal([3,6,5,3,6,4], black_box(series, k=1, l=2)))
+        self.assertTrue(
+                np.array_equal([3,6,5,3,6,4], black_box(series, l=2)))
 
         series = [0,1,2,0,1,1,0,2]
-        self.assertEqual([5,15,19,4,12,11], black_box(series, k=1, l=2))
-        self.assertEqual([5,15,19,4,12,11], black_box(series, l=2))
-
+        self.assertTrue(
+                np.array_equal([5,15,19,4,12,11], black_box(series, k=1, l=2)))
+        self.assertTrue(
+                np.array_equal([5,15,19,4,12,11], black_box(series, l=2)))
 
     def test_single_series_ensemble(self):
         series = [
