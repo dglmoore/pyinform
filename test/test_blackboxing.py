@@ -94,15 +94,15 @@ class TestBlackBoxing(unittest.TestCase):
 
     def test_flattens_base(self):
         series = [[0,1,0], [1,2,1]]
-        self.assertTrue(np.array_equal(series, black_box(series, b=(3,))))
+        self.assertTrue(np.array_equal(series, black_box(series, b=[[3]])))
 
     def test_flattens_history(self):
         series = [[0,1,0], [1,2,1]]
-        self.assertTrue(np.array_equal(series, black_box(series, k=(1,))))
+        self.assertTrue(np.array_equal(series, black_box(series, k=[[1]])))
 
     def test_flattens_future(self):
         series = [[0,1,0], [1,2,1]]
-        self.assertTrue(np.array_equal(series, black_box(series, l=(0,))))
+        self.assertTrue(np.array_equal(series, black_box(series, l=[[0]])))
 
     def test_base_history_incompatible(self):
         series = [[0,1,0], [1,2,1]]
