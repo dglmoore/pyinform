@@ -146,7 +146,7 @@ class TestBlackBoxing(unittest.TestCase):
         with self.assertRaises(ValueError):
             black_box([[[0,1,2]],[[0,0,1]]], k=3)
 
-    def test_series_history_incompatible(self):
+    def test_series_future_incompatible(self):
         with self.assertRaises(ValueError):
             black_box([0,1,2], l=(2,3))
 
