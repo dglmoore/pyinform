@@ -124,7 +124,7 @@ class TestBlackBoxing(unittest.TestCase):
             [0,1,1,0,1,1,0,0],
             [0,0,1,1,0,1,0,1],
         ]
-        self.assertTrue(np.array_equal(series, black_box(series)))
+        self.assertTrue(np.array_equal(series, black_box(series, b=2)))
         self.assertTrue(np.array_equal(series, black_box(series, k=1)))
         self.assertTrue(np.array_equal([
             [1,3,2,1,3,2,0],
@@ -149,7 +149,7 @@ class TestBlackBoxing(unittest.TestCase):
         self.assertTrue(np.array_equal([
             [3,6,5,3,6,4],
             [1,3,6,5,2,5],
-        ]), black_box(series, k=1, l=2))
+        ], black_box(series, k=1, l=2)))
         self.assertTrue(np.array_equal([
             [3,6,5,3,6,4],
             [1,3,6,5,2,5],

@@ -37,11 +37,35 @@ def black_box(series, b=None, k=None, l=None):
         u, v, w = 1, 1, len(series)
         if b is None:
             b = np.ascontiguousarray([np.max(series) + 1], np.int32)
+    elif series.ndim == 2 and b is not None:
+        if len(b) == 1:
+            u = 1
+            v, w = series.shape
+        else:
+            v = 1
+            u, w = series.shape
+    elif series.ndim == 2 and k is not None:
+        if len(k) == 1:
+            u = 1
+            v, w = series.shape
+            b = np.ascontiguousarray([np.max(series) + 1], np.int32)
+        else:
+            v = 1
+            u, w = series.shape
+            b = np.ascontiguousarray(np.max(series, 1), dtype=np.int32) + 1
+    elif series.ndim == 2 and l is not None:
+        if len(l) == 1:
+            u = 1
+            v, w = series.shape
+            b = np.ascontiguousarray([np.max(series) + 1], np.int32)
+        else:
+            v = 1
+            u, w = series.shape
+            b = np.ascontiguousarray(np.max(series, 1), dtype=np.int32) + 1
     elif series.ndim == 2:
         v = 1
         u, w = series.shape
-        if b is None:
-            b = np.ascontiguousarray(np.max(series, 1), dtype=np.int32) + 1
+        b = np.ascontiguousarray(np.max(series, 1), dtype=np.int32) + 1
     elif series.ndim == 3:
         u, v, w = series.shape
         if b is None:
