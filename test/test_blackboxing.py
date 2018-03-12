@@ -451,98 +451,123 @@ class TestBlackBoxing(unittest.TestCase):
 
     def test_parts_single_series(self):
         series = [0,1,1,0,1,1,0,0]
-        self.assertTrue(
-                np.array_equal(series, black_box(series, parts=(1,))))
-        self.assertTrue(
-                np.array_equal(series, black_box(series, b=3, parts=(1,))))
+
+        box, bases = black_box(series, parts=(0,))
+        self.assertEqual((2,), bases)
+        self.assertTrue(np.array_equal(series, box))
+
+        box, bases = black_box(series, b=3, parts=(0,))
+        self.assertEqual((3,), bases)
+        self.assertTrue(np.array_equal(series, box))
 
         series = [0,1,2,0,1,1,0,2]
-        self.assertTrue(
-                np.array_equal(series, black_box(series, parts=(0,))))
-        self.assertTrue(
-                np.array_equal(series, black_box(series, b=4, parts=(0,))))
+
+        box, bases = black_box(series, parts=(0,))
+        self.assertEqual((3,), bases)
+        self.assertTrue(np.array_equal(series, box))
+
+        box, bases = black_box(series, b=4, parts=(0,))
+        self.assertEqual((4,), bases)
+        self.assertTrue(np.array_equal(series, box))
 
     def test_parts_single_series_ensemble(self):
         series = [
             [0,1,1,0,1,1,0,0],
             [0,0,1,1,0,1,0,1],
         ]
-        self.assertTrue(
-            np.array_equal(series, black_box(series, parts=(0,))))
-        self.assertTrue(
-            np.array_equal(series, black_box(series, b=3, parts=(0,))))
+        box, bases = black_box(series, parts=(0,))
+        self.assertEqual((2,), bases)
+        self.assertTrue(np.array_equal(series, box))
+
+        box, bases = black_box(series, b=3, parts=(0,))
+        self.assertEqual((3,), bases)
+        self.assertTrue(np.array_equal(series, box))
 
         series = [
             [0,1,2,0,1,1,0,2],
             [2,1,1,2,0,0,1,2],
         ]
-        self.assertTrue(
-            np.array_equal(series, black_box(series, parts=(0,))))
-        self.assertTrue(
-            np.array_equal(series, black_box(series, b=4, parts=(0,))))
+        
+        box, bases = black_box(series, parts=(0,))
+        self.assertEqual((3,), bases)
+        self.assertTrue(np.array_equal(series, box))
+
+        box, bases = black_box(series, b=4, parts=(0,))
+        self.assertEqual((4,), bases)
+        self.assertTrue(np.array_equal(series, box))
 
     def test_parts_one_partition(self):
         series = [[0,1,1], [1,0,1]]
-        self.assertTrue(
-            np.array_equal(black_box(series),
-                black_box(series, parts=(0,0))))
+        box, bases = black_box(series, parts=(0,0))
+        self.assertEqual((4,), bases)
+        self.assertTrue(np.array_equal(black_box(series), box))
 
         series = [[0,1,1], [1,0,1], [0,0,1]]
-        self.assertTrue(
-            np.array_equal(black_box(series),
-                black_box(series, parts=(0,0,0))))
+        box, bases = black_box(series, parts=(0,0,0))
+        self.assertEqual((8,), bases)
+        self.assertTrue(np.array_equal(black_box(series), box))
 
     def test_parts_two_partitions(self):
         series = [[0,1,1], [1,0,1]]
-        self.assertTrue(
-            np.array_equal(series, black_box(series, parts=(0,1))))
-        self.assertTrue(
-            np.array_equal([
-                [1,0,1],
-                [0,1,1],
-            ], black_box(series, parts=(1,0))))
+
+        box, bases = black_box(series, parts=(0,1))
+        self.assertEqual((2,2), bases)
+        self.assertTrue(np.array_equal(series, box))
+
+        box, bases = black_box(series, parts=(1,0))
+        self.assertEqual((2,2), bases)
+        self.assertTrue(np.array_equal(series, box))
 
         series = [ [0,1,1], [1,0,1], [0,0,1] ]
+
+        box, bases = black_box(series, parts=(0,0,1))
+        self.assertEqual((4,2), bases)
         self.assertTrue(
             np.array_equal([
                 [1,2,3],
                 [0,0,1]
-            ], black_box(series, parts=(0,0,1))))
+            ], box))
+
+        box, bases = black_box(series, parts=(0,1,0))
+        self.assertEqual((4,2), bases)
         self.assertTrue(
             np.array_equal([
                 [0,2,3],
                 [1,0,1]
-            ], black_box(series, parts=(0,1,0))))
+            ], box))
+
+        box, bases = black_box(series, parts=(0,1,1))
+        self.assertEqual((2,4), bases)
         self.assertTrue(
             np.array_equal([
                 [0,1,1],
                 [2,0,3]
-            ], black_box(series, parts=(0,1,1))))
+            ], box))
+
+        box, bases = black_box(series, parts=(1,0,1))
+        self.assertEqual((2,4), bases)
         self.assertTrue(
             np.array_equal([
                 [1,0,1],
                 [0,2,3]
-            ], black_box(series, parts=(1,0,1))))
+            ], box))
 
     def test_parts_three_partitions(self):
         series = [ [0,1,1], [1,0,1], [0,0,1] ]
-        self.assertTrue(
-            np.array_equal(series, black_box(series, parts=(0,1,2))))
-        self.assertTrue(
-            np.array_equal([
-                [0,0,1],
-                [0,1,1],
-                [1,0,1],
-            ], black_box(series, parts=(1,2,0))))
-        self.assertTrue(
-            np.array_equal([
-                [1,0,1],
-                [0,1,1],
-                [0,0,1],
-            ], black_box(series, parts=(1,0,2))))
-        self.assertTrue(
-            np.array_equal([
-                [0,0,1],
-                [1,0,1],
-                [0,1,1],
-            ], black_box(series, parts=(2,1,0))))
+
+        box, bases = black_box(series, parts=(0,1,2))
+        self.assertEqual((2,2,2), bases)
+        self.assertTrue(np.array_equal(series,box))
+
+        box, bases = black_box(series, parts=(1,2,0))
+        self.assertEqual((2,2,2), bases)
+        self.assertTrue(np.array_equal(series,box))
+
+        box, bases = black_box(series, parts=(1,0,2))
+        self.assertEqual((2,2,2), bases)
+        self.assertTrue(np.array_equal(series,box))
+
+        box, bases = black_box(series, parts=(2,1,0))
+        self.assertEqual((2,2,2), bases)
+        self.assertTrue(np.array_equal(series,box))
+
