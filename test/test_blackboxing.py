@@ -408,3 +408,141 @@ class TestBlackBoxing(unittest.TestCase):
             [15,25,20, 9,21,14],
             [ 5,14,25,20, 9,19],
         ], black_box(series, k=(2,1), l=(1,0))))
+
+    def test_parts_negative_state(self):
+        with self.assertRaises(InformError):
+            black_box([[0, -1, 1], [1, 0, 1]], parts=(0,0))
+
+        with self.assertRaises(InformError):
+            black_box([[0, 1, 1], [1, 0, -1]], parts=(0,0))
+
+    def test_parts_invalid_state(self):
+        with self.assertRaises(InformError):
+            black_box([[0, 2, 1], [1, 0, 1]], b=(2,2), parts=(0,0))
+
+        with self.assertRaises(InformError):
+            black_box([[0, 1, 1], [1, 0, 2]], b=(2,2), parts=(0,0))
+
+    def test_parts_with_history(self):
+        with self.assertRaises(ValueError):
+            black_box([[0,1,0], [1,1,0], [0,1,0]], parts=(0,1,0), k=(2,1,1))
+
+    def test_parts_with_future(self):
+        with self.assertRaises(ValueError):
+            black_box([[0,1,0], [1,1,0], [0,1,0]], parts=(0,1,0), l=(1,1,0))
+
+    def test_parts_invalid(self):
+        with self.assertRaises(InformError):
+            black_box([[0,1,0], [1,1,0], [0,1,0]], parts=(0,1,3))
+
+        with self.assertRaises(InformError):
+            black_box([[0,1,0], [1,1,0], [0,1,0]], parts=(-1,0,0))
+
+    def test_bases_parts_incompatible(self):
+        with self.assertRaises(ValueError):
+            black_box([[0,1,0], [1,1,0], [0,1,0]], b=(3,3,3), parts=(0,1))
+
+    def test_parts_series_incompatible(self):
+        with self.assertRaises(ValueError):
+            black_box([0,1,2], parts=(2,3))
+
+        with self.assertRaises(ValueError):
+            black_box([[[0,1,2]],[[0,0,1]]], parts=(1,))
+
+    def test_parts_single_series(self):
+        series = [0,1,1,0,1,1,0,0]
+        self.assertTrue(
+                np.array_equal(series, black_box(series, parts=(1,))))
+        self.assertTrue(
+                np.array_equal(series, black_box(series, b=3, parts=(1,))))
+
+        series = [0,1,2,0,1,1,0,2]
+        self.assertTrue(
+                np.array_equal(series, black_box(series, parts=(0,))))
+        self.assertTrue(
+                np.array_equal(series, black_box(series, b=4, parts=(0,))))
+
+    def test_parts_single_series_ensemble(self):
+        series = [
+            [0,1,1,0,1,1,0,0],
+            [0,0,1,1,0,1,0,1],
+        ]
+        self.assertTrue(
+            np.array_equal(series, black_box(series, parts=(0,))))
+        self.assertTrue(
+            np.array_equal(series, black_box(series, b=3, parts=(0,))))
+
+        series = [
+            [0,1,2,0,1,1,0,2],
+            [2,1,1,2,0,0,1,2],
+        ]
+        self.assertTrue(
+            np.array_equal(series, black_box(series, parts=(0,))))
+        self.assertTrue(
+            np.array_equal(series, black_box(series, b=4, parts=(0,))))
+
+    def test_parts_one_partition(self):
+        series = [[0,1,1], [1,0,1]]
+        self.assertTrue(
+            np.array_equal(black_box(series),
+                black_box(series, parts=(0,0))))
+
+        series = [[0,1,1], [1,0,1], [0,0,1]]
+        self.assertTrue(
+            np.array_equal(black_box(series),
+                black_box(series, parts=(0,0,0))))
+
+    def test_parts_two_partitions(self):
+        series = [[0,1,1], [1,0,1]]
+        self.assertTrue(
+            np.array_equal(series, black_box(series, parts=(0,1))))
+        self.assertTrue(
+            np.array_equal([
+                [1,0,1],
+                [0,1,1],
+            ], black_box(series, parts=(1,0))))
+
+        series = [ [0,1,1], [1,0,1], [0,0,1] ]
+        self.assertTrue(
+            np.array_equal([
+                [1,2,3],
+                [0,0,1]
+            ], black_box(series, parts=(0,0,1))))
+        self.assertTrue(
+            np.array_equal([
+                [0,2,3],
+                [1,0,1]
+            ], black_box(series, parts=(0,1,0))))
+        self.assertTrue(
+            np.array_equal([
+                [0,1,1],
+                [2,0,3]
+            ], black_box(series, parts=(0,1,1))))
+        self.assertTrue(
+            np.array_equal([
+                [1,0,1],
+                [0,2,3]
+            ], black_box(series, parts=(1,0,1))))
+
+    def test_parts_three_partitions(self):
+        series = [ [0,1,1], [1,0,1], [0,0,1] ]
+        self.assertTrue(
+            np.array_equal(series, black_box(series, parts=(0,1,2))))
+        self.assertTrue(
+            np.array_equal([
+                [0,0,1],
+                [0,1,1],
+                [1,0,1],
+            ], black_box(series, parts=(1,2,0))))
+        self.assertTrue(
+            np.array_equal([
+                [1,0,1],
+                [0,1,1],
+                [0,0,1],
+            ], black_box(series, parts=(1,0,2))))
+        self.assertTrue(
+            np.array_equal([
+                [0,0,1],
+                [1,0,1],
+                [0,1,1],
+            ], black_box(series, parts=(2,1,0))))
