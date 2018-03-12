@@ -409,6 +409,12 @@ class TestBlackBoxing(unittest.TestCase):
             [ 5,14,25,20, 9,19],
         ], black_box(series, k=(2,1), l=(1,0))))
 
+    def test_flattens_parts(self):
+        series = [[0,1,0], [1,2,1]]
+        box, bases = black_box(series, parts=[[0],[1]])
+        self.assertEqual((2,3), bases)
+        self.assertTrue(np.array_equal(series, box))
+            
     def test_parts_negative_state(self):
         with self.assertRaises(InformError):
             black_box([[0, -1, 1], [1, 0, 1]], parts=(0,0))
@@ -438,9 +444,29 @@ class TestBlackBoxing(unittest.TestCase):
         with self.assertRaises(InformError):
             black_box([[0,1,0], [1,1,0], [0,1,0]], parts=(-1,0,0))
 
+    def test_parts_high_series_dimension(self):
+        with self.assertRaises(ValueError):
+            black_box([
+                [
+                    [[1,0,1], [0,0,1]],
+                    [[0,1,0], [0,0,0]]
+                ],
+                [
+                    [[1,0,1], [0,0,1]],
+                    [[0,1,0], [0,0,0]]
+                ],
+            ], parts=(0,0))
+
     def test_bases_parts_incompatible(self):
         with self.assertRaises(ValueError):
             black_box([[0,1,0], [1,1,0], [0,1,0]], b=(3,3,3), parts=(0,1))
+
+    def test_parts_series_base_incompatible(self):
+        with self.assertRaises(ValueError):
+            black_box([0,1,2], b=(2,3), parts=(0,1))
+
+        with self.assertRaises(ValueError):
+            black_box([[[0,1,2]],[[0,0,1]]], b=3, parts=(0,1))
 
     def test_parts_series_incompatible(self):
         with self.assertRaises(ValueError):
