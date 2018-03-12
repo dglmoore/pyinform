@@ -597,3 +597,64 @@ class TestBlackBoxing(unittest.TestCase):
         self.assertEqual((2,2,2), bases)
         self.assertTrue(np.array_equal(series,box))
 
+    def test_parts_multiple_ensemble(self):
+        series = [
+            [
+                [0,1,0,1,1],
+                [1,0,1,1,0],
+            ],
+            [
+                [0,0,1,0,1],
+                [0,1,1,0,1],
+            ],
+            [
+                [0,0,2,1,1],
+                [0,1,1,0,1],
+            ]
+        ]
+
+        expect = [
+            [
+                [0,1,0,1,1],
+                [1,0,1,1,0],
+            ],
+            [
+                [0,0,5,1,4],
+                [0,4,4,0,4],
+            ],
+        ]
+
+        box, bases = black_box(series, parts=(0,1,1))
+        self.assertEqual((2,6), bases)
+        self.assertTrue(np.array_equal(expect, box))
+
+        series = [
+            [
+                [0,1,0,1,1],
+                [1,0,1,1,0],
+            ],
+            [
+                [0,0,2,0,1],
+                [0,1,1,0,1],
+            ],
+            [
+                [0,0,1,1,1],
+                [0,1,1,0,1],
+            ],
+        ]
+
+        expect = [
+            [
+                [0,1,0,1,1],
+                [1,0,1,1,0],
+            ],
+            [
+                [0,0,5,1,3],
+                [0,3,3,0,3],
+            ],
+        ]
+
+        box, bases = black_box(series, parts=(0,1,1))
+        self.assertEqual((2,6), bases)
+        self.assertTrue(np.array_equal(expect, box))
+
