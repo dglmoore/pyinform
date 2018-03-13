@@ -34,3 +34,10 @@ Utilities
         .. autofunction:: encode
     
         .. autofunction:: decode
+
+    Partitionings
+    -------------
+
+    .. automodule:: pyinform.utils.partitioning
+
+        .. autofunction:: partitionings
