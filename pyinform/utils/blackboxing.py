@@ -1,6 +1,143 @@
 # Copyright 2016-2018 ELIFE. All rights reserved.
 # Use of this source code is governed by a MIT
 # license that can be found in the LICENSE file.
+"""
+.. testsetup::
+
+    from pyinform.utils import black_box
+
+It is often useful when analyzing complex systems to black-box components of
+the system.  This process amounts to grouping components of the system and
+treating them as a single entity, without regard for its small-scale structure.
+As an example, consider you have two Boolean random variables :math:`X` and
+:math:`Y`, and you observe time series of each simultaneously:
+
+.. math::
+
+    X:\ \{0,1,1,0,1,0,0,1\}\\\\
+    Y:\ \{1,0,0,1,1,0,1,0\}
+
+It may be worthwhile to consider these observations as observations of the
+joint variable :math:`(X,Y)`:
+
+.. math::
+
+    (X,Y):\ \{(0,1),(1,0),(1,0),(0,1),(1,1),(0,0),(0,1),(1,0)\}.
+
+The joint observations can then be naturally encoded, for example, as base-4
+states
+
+.. math::
+
+    (X,Y):\ \{1,2,2,1,3,0,1,2\}.
+
+We refer this process of mapping the observations of :math:`X` and :math:`Y` to
+the encoded observations of stem:[(X,Y)] as black-boxing. In this case, the
+black-boxing procedure is performed in "space" (you might think of :math:`X`
+and :math:`Y` having locations in space).  We may also black-box in time. The
+canonical example of this is considering the :math:`k`-history of a random
+variable:
+
+.. math ::
+
+    X:\ \{0,1,1,0,1,0,0,1\}
+
+.. math::
+
+    X^{(2)}:\ \{((0,1),(1,1),(1,0),(0,1),(1,0),(0,0),(0,1)\},
+
+and the observations of stem:[X^{(2)}] can be encoded as base-4 states:
+
+.. math::
+
+    X^{(2)}:\ \{(1,3,2,1,2,0,1\}.
+
+We provide a black-boxing function that allows the user to black-box in both
+space and into the future and past of a collection of frandom variables:
+:py:func:`black_box`. The :py:func:`black_box` function also allows the user to
+black-box based on a partitioning scheme (useful in the implementation of
+integration measures such as evidence of integration).
+
+Examples
+--------
+
+Structured Black Boxing
+^^^^^^^^^^^^^^^^^^^^^^^
+
+**Example 1**: Black-box two time series with no history or futures
+
+.. doctest::
+
+    >>> black_box([[0,1,1,0,1,0,0,1], [1,0,0,1,1,0,1,0]])
+    array([1, 2, 2, 1, 3, 0, 1, 2], dtype=int32)
+
+This is the first example described in :py:mod:`pyinform.utils.blackboxing`.
+
+**Example 2**: Black-box a single time series in time with history length 2:
+
+.. doctest::
+
+    >>> black_box([0,1,1,0,1,0,0,1], k=2)
+    array([1, 3, 2, 1, 2, 0, 1], dtype=int32)
+
+This is the second example described in :py:mod:`pyinform.utils.blackboxing`.
+
+*Example 3*: Black-box two time series with histories and futures:
+
+In this example we consider two time series:
+
+.. math::
+
+    X:\ \{0,1,1,0,1,0,0,1\}\\\\
+    Y:\ \{1,0,0,1,1,0,1,0\}
+
+to produce observations of :math:`(X^{(2,0)},Y^{(1,1)})`
+
+.. math::
+
+    (X^{(2,0)},Y^{(1,1)}):\ \{(0,1,0,0),(1,1,0,1),(1,0,1,1),(0,1,1,0),(1,0,0,1),(0,0,1,0)\}
+
+encoded as
+
+.. math::
+
+    (X^{(2,0)},Y^{(1,1)}):\ \{4,13,11,6,9,2\}.
+
+.. doctest::
+
+    >>> black_box([[0,1,1,0,1,0,0,1], [1,0,0,1,1,0,1,0]], k=(2,1), l=(0,1))
+    array([ 4, 13, 11,  6,  9,  2], dtype=int32)
+
+Partitionings
+^^^^^^^^^^^^^
+
+When the `parts` argument is provided to :py:func:`black_box`, a tuple is
+returned. The first element is the black-boxed time series and the second is
+a tuple of bases associated with the resulting time series.
+
+**Example 1**: Black-box 4 time series into a single time series
+
+.. doctest::
+
+    >>> series = [[0,1,1,0,1,0,0,1,],[1,0,0,1,1,0,1,0],[0,0,0,1,1,1,0,0],[1,0,1,0,1,1,1,0]]
+    >>> black_box(series, parts=(0,0,0,0))
+    (array([ 5,  8,  9,  6, 15,  3,  5,  8], dtype=int32), (16,))
+
+This could be done more simply as `black_box(series)`, but it is illustrative.
+
+**Example 2**: Black-box 4 time series into two time series using the
+partitioning scheme `(0,1,1,0)`. That is, combine the 0th and 4th, and 1st and
+2nd.
+
+.. doctest::
+
+    >>> series = [[0,1,1,0,1,0,0,1,],[1,0,0,1,1,0,1,0],[0,0,0,1,1,1,0,0],[1,0,1,0,1,1,1,0]]
+    >>> black_box(series, parts=(0,1,1,0))
+    (array([[1, 2, 3, 0, 3, 1, 1, 2],
+           [2, 0, 0, 3, 3, 1, 2, 0]], dtype=int32), (4, 4))
+
+"""
+
 import numpy as np
 
 from ctypes import byref, c_int, c_ulong, POINTER
@@ -8,6 +145,33 @@ from pyinform import _inform
 from pyinform.error import ErrorCode, error_guard
 
 def black_box(series, b=None, k=None, l=None, parts=None):
+    """
+    Black-box a collection of time series.
+
+    History lengths for each time series may be provided through `r` and future
+    lengths through `l`.
+
+    Alternatively, the user may specify a `parts` argument which represents a
+    partitioning scheme. In that case, neither `k` or `l` may be provided. See
+    partitioning time series for more informatoin about partitioning schemes.
+
+    Optionally, the user may provide a base for each of the provided time
+    series; this is useful when the user knows the provided time series sample
+    from a random variable with a given support, but not all states appear in
+    the time series, e.g. if providing a time series `[0,1,0,1]` when the user
+    knows that the base of the series should be `3` (`2` was never sampled).
+
+    :param series: the time series
+    :param b: the base of the time series (optional)
+    :type b: int or a sequence
+    :param k: the history lengths (optional)
+    :type k: int or a sequence
+    :param l: the future lengths (optional)
+    :type l: int or a sequence
+    :param parts: the partitioning scheme (optional)
+    :type parts: a sequence
+    :returns: the black-boxed time series (and the bases if `parts` is provided)
+    """
     series = np.ascontiguousarray(series, dtype=np.int32)
 
     if b is not None:

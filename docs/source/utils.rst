@@ -3,6 +3,13 @@ Utilities
 
 .. automodule:: pyinform.utils
 
+    Black Boxing
+    ------------
+
+    .. automodule:: pyinform.utils.blackboxing
+
+        .. autofunction:: black_box
+
     State Binning
     -------------
     
