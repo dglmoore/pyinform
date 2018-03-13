@@ -15,7 +15,7 @@ Example 1: Construction
 ^^^^^^^^^^^^^^^^^^^^^^^
 You can construct a distribution with a specified number of unique observables.
 This construction method results in an *invalid* distribution as no
-observations have been made thus far. ::
+observations have been made thus far.
 
 .. doctest::
 
@@ -93,7 +93,7 @@ Example 2: Making Observations
 
 Once a distribution has been constructed, we can begin making observations.
 There are a few methods for doing so. The first uses the standard indexing
-operations, treating the distribution similarly to a list: ::
+operations, treating the distribution similarly to a list:
 
 .. doctest::
 
@@ -105,7 +105,7 @@ operations, treating the distribution similarly to a list: ::
     Dist.from_hist([0, 1, 4, 9, 16])
 
 The second method is to make *incremental* changes to the distribution. This
-is useful when making observations of data as it is generated: ::
+is useful when making observations of data as it is generated:
 
 .. doctest::
 
@@ -128,7 +128,7 @@ is useful when making observations of data as it is generated: ::
     Dist.from_hist([1, 2, 5, 2])
 
 A third method essentially wrapps the above `for`-loop to provide a method of
-recording data from a time time series: ::
+recording data from a time time series:
 
 .. doctest::
 
@@ -144,7 +144,7 @@ Example 3: Probabilities
 
 Once some observations have been made, we can start asking for probabilities.
 As in the previous examples, there are multiple ways of doing this. The first
-is to just ask for the probability of a given event. ::
+is to just ask for the probability of a given event.
 
 .. doctest::
 
@@ -160,7 +160,7 @@ is to just ask for the probability of a given event. ::
     >>> d.probability(3)
     0.3333333333333333
 
-Sometimes it is nice to just dump the probabilities out to an array: ::
+Sometimes it is nice to just dump the probabilities out to an array:
 
 .. doctest::
 
@@ -173,7 +173,7 @@ Example 4: Shannon Entropy
 
 Once you have a distribution you can do lots of fun things with it. In
 this example, we will compute the shannon entropy of a timeseries of
-observed values. ::
+observed values.
 
 .. doctest::
 
@@ -187,7 +187,7 @@ observed values. ::
     1.6854752972273344
 
 Of course **PyInform** provides a function for this:
-:py:func:`pyinform.shannon.entropy`. ::
+:py:func:`pyinform.shannon.entropy`.
 
 .. doctest::
 
