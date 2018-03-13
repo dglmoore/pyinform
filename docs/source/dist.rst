@@ -32,7 +32,7 @@ observations have been made thus far. ::
 We also provide several static methods for constructing distributions in various
 ways:
 
-- From a list of observation counts (i.e. a histogram): ::
+- From a list of observation counts (i.e. a histogram):
 
 .. doctest::
 
@@ -46,7 +46,7 @@ ways:
     >>> len(d)
     7
 
-- Approximate from a list of probabilities: ::
+- Approximate from a list of probabilities:
 
 .. doctest::
 
@@ -60,7 +60,7 @@ ways:
     >>> len(d)
     3
 
-- Estimate from a list of observed states: ::
+- Estimate from a list of observed states:
 
 .. doctest::
 
@@ -74,7 +74,7 @@ ways:
     >>> len(d)
     3
 
-- A uniform distribution over a given support: ::
+- A uniform distribution over a given support:
 
 .. doctest::
 
