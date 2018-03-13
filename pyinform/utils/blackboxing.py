@@ -32,7 +32,7 @@ states
     (X,Y):\ \{1,2,2,1,3,0,1,2\}.
 
 We refer this process of mapping the observations of :math:`X` and :math:`Y` to
-the encoded observations of stem:[(X,Y)] as black-boxing. In this case, the
+the encoded observations of :math:`(X,Y)` as black-boxing. In this case, the
 black-boxing procedure is performed in "space" (you might think of :math:`X`
 and :math:`Y` having locations in space).  We may also black-box in time. The
 canonical example of this is considering the :math:`k`-history of a random
@@ -46,7 +46,7 @@ variable:
 
     X^{(2)}:\ \{((0,1),(1,1),(1,0),(0,1),(1,0),(0,0),(0,1)\},
 
-and the observations of stem:[X^{(2)}] can be encoded as base-4 states:
+and the observations of :math:`X^{(2)}` can be encoded as base-4 states:
 
 .. math::
 
