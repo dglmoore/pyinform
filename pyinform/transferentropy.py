@@ -123,23 +123,18 @@ from ctypes import byref, c_char_p, c_int, c_ulong, c_double, POINTER
 from pyinform import _inform
 from pyinform.error import ErrorCode, error_guard
 
-def transfer_entropy(source, target, k, b=0, local=False):
+def transfer_entropy(source, target, k, local=False):
     """
     Compute the local or average transfer entropy from one time series to
     another with target history length *k*.
-    
-    If the base *b* is not specified (or is 0), then it is inferred from the
-    time series with 2 as a minimum. *b* must be at least the base of the time
-    series and is used as the base of the logarithm.
 
     :param source: the source time series
     :type source: sequence or ``numpy.ndarray``
     :param target: the target time series
     :type target: sequence or ``numpy.ndarray``
     :param int k: the history length
-    :param int b: the base of the time series and logarithm
     :param bool local: compute the local transfer entropy
-    :returns: the average or local transfer entropy
+    :returns: the average or local transfer entropy (in bits)
     :rtype: float or ``numpy.ndarray``
     :raises ValueError: if the time series have different shapes
     :raises ValueError: if either time series has no initial conditions
@@ -156,8 +151,7 @@ def transfer_entropy(source, target, k, b=0, local=False):
     elif xs.ndim > 2:
         raise ValueError("dimension greater than 2")
 
-    if b == 0:
-        b = max(2, max(np.amax(xs),np.amax(ys)) + 1)
+    b = max(2, max(np.amax(xs),np.amax(ys)) + 1)
 
     ydata = ys.ctypes.data_as(POINTER(c_int))
     xdata = xs.ctypes.data_as(POINTER(c_int))
