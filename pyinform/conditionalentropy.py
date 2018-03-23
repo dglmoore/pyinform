@@ -10,13 +10,13 @@ to construct the empirical distributions and then
 
 .. math::
 
-    H_b(Y|X) = -\sum_{x_i, y_i} p(x_i, y_i) \\log_b \\frac{p(x_i, y_i)}{p(x_i)}.
+    H_b(X\,|\,Y) = -\sum_{x_i, y_i} p(x_i, y_i) \\log_b \\frac{p(x_i, y_i)}{p(y_i)}.
     
 This can be viewed as the time-average of the local conditional entropy
 
 .. math::
 
-    h_{b,i}(Y|X) = -\\log_b \\frac{p(x_i, y_i)}{p(x_i)}.
+    h_{b,i}(X\,|\,Y) = -\\log_b \\frac{p(x_i, y_i)}{p(y_i)}.
 
 
 See [Cover1991]_ for more information.
@@ -30,20 +30,20 @@ Examples
 
     >>> xs = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,1]
     >>> ys = [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0,0,1]
-    >>> conditional_entropy(xs,ys)      # H(Y|X)
-    0.5971071794515037
-    >>> conditional_entropy(ys,xs)      # H(X|Y)
+    >>> conditional_entropy(xs,ys)      # H(X|Y)
     0.5077571498797332
+    >>> conditional_entropy(ys,xs)      # H(Y|X)
+    0.5971071794515037
     >>> conditional_entropy(xs, ys, local=True)
-    array([ 3.        ,  3.        ,  0.19264508,  0.19264508,  0.19264508,
-            0.19264508,  0.19264508,  0.19264508,  0.19264508,  0.19264508,
-            0.19264508,  0.19264508,  0.19264508,  0.19264508,  0.19264508,
-            0.19264508,  0.4150375 ,  0.4150375 ,  0.4150375 ,  2.        ])
-    >>> conditional_entropy(ys, xs, local=True)
     array([ 1.32192809,  1.32192809,  0.09953567,  0.09953567,  0.09953567,
             0.09953567,  0.09953567,  0.09953567,  0.09953567,  0.09953567,
             0.09953567,  0.09953567,  0.09953567,  0.09953567,  0.09953567,
             0.09953567,  0.73696559,  0.73696559,  0.73696559,  3.9068906 ])
+    >>> conditional_entropy(ys, xs, local=True)
+    array([ 3.        ,  3.        ,  0.19264508,  0.19264508,  0.19264508,
+            0.19264508,  0.19264508,  0.19264508,  0.19264508,  0.19264508,
+            0.19264508,  0.19264508,  0.19264508,  0.19264508,  0.19264508,
+            0.19264508,  0.4150375 ,  0.4150375 ,  0.4150375 ,  2.        ])
 """
 import numpy as np
 
@@ -55,7 +55,7 @@ def conditional_entropy(xs, ys, bx=0, by=0, b=2.0, local=False):
     """
     Compute the (local) conditional entropy between two time series.
     
-    This function expects the **condition** to be the first argument.
+    This function expects the **condition** to be the second argument.
     
     The bases *bx* and *by* are inferred from their respective time series if
     they are not provided (or are 0). The minimum value in both cases is 2.
@@ -95,9 +95,9 @@ def conditional_entropy(xs, ys, bx=0, by=0, b=2.0, local=False):
     if local is True:
         ce = np.empty(us.shape, dtype=np.float64)
         out = ce.ctypes.data_as(POINTER(c_double))
-        _local_conditional_entropy(xdata, ydata, c_ulong(n), c_int(bx), c_int(by), c_double(b), out, byref(e))
+        _local_conditional_entropy(ydata, xdata, c_ulong(n), c_int(by), c_int(bx), c_double(b), out, byref(e))
     else:
-        ce = _conditional_entropy(xdata, ydata, c_ulong(n), c_int(bx), c_int(by), c_double(b), byref(e))
+        ce = _conditional_entropy(ydata, xdata, c_ulong(n), c_int(by), c_int(bx), c_double(b), byref(e))
 
     error_guard(e)
 
